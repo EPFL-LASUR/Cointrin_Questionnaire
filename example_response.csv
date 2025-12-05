@@ -1,0 +1,4 @@
+timestamp,age_group,residence,visit_frequency,visit_reasons,transport_modes,accessibility,safety,attractiveness,improvements,additional_comments
+2025-12-05 08:00:00,25-34,Genève / Geneva,Plusieurs fois par semaine / Several times a week,work; airport,public; bike,4,4,3,Better bike infrastructure and more green spaces,The area is functional but could be more attractive
+2025-12-05 09:15:00,45-54,Cointrin,Quotidiennement / Daily,work; shopping,car; walk,3,4,3,Improved public transport connections,Generally satisfied with the area
+2025-12-05 10:30:00,35-44,Canton de Genève / Canton of Geneva,Quelques fois par mois / A few times a month,airport; shopping,car; taxi,4,3,2,More amenities and better pedestrian access,Could be more welcoming
