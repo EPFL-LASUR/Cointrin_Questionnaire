@@ -3,16 +3,39 @@
 ## Load Data
 ```{r}
 here::i_am("R/data_cleaning.Rmd")
+source(here::here("R/util.R"))
 
-processed_data <- "../data/processed"
-raw_data <- "../data/raw"
+processed_data_folder <- "../data/processed"
+raw_data_folder <- "../data/raw"
 
 raw_data <- haven::read_sav(
   file.path(
-    raw_data, "data_project_1074950_2025_12_05.sav"
+    raw_data_folder, "data_project_1074950_2025_12_05.sav"
   )
 )
 ```
 
+## Remove tester answers
 ```{r}
+no_tester <- dplyr::filter(raw_data, tester != 1)
+# 847 / 848
+```
+
+
+## Remove users that answered with an other aphabet/language
+```{r}
+french <- dplyr::filter(no_tester, !lfdn %in% c(56, 192, 221, 396, 1393, 380, 426, 493, 473, 708, 723))
+```
+
+## Remove Duplicates
+```{r}
+# check with Hugo
+duplicates <- c(c(848, 847), c(509, 504), c(662, 661), c(139, 138), c(745, 744), c(1373, 1372))
+no_duplicates <- french
+for (couple in duplicates) {
+  if (calculate_same_answers(french, couple[1], couple[2]) > 0.9) {
+    no_duplicates <- dplyr::filter(no_duplicates, lfdn != couple[2])
+    print(couple[1])
+  }
+}
 ```
