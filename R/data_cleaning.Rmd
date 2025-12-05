@@ -18,7 +18,6 @@ raw_data <- haven::read_sav(
 ## Remove tester answers
 ```{r}
 no_tester <- dplyr::filter(raw_data, tester != 1)
-# 847 / 848
 ```
 
 
@@ -38,4 +37,13 @@ for (couple in duplicates) {
     print(couple[1])
   }
 }
+```
+
+## Save cleaned file
+```{r}
+if (!dir.exists(processed_data_folder)) {
+  dir.create(processed_data_folder, recursive = TRUE)
+}
+
+haven::write_sav(no_duplicates, file.path(processed_data_folder, "cleaned_data.sav"))
 ```
