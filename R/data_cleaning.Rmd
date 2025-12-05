@@ -1,0 +1,18 @@
+# Data Cleaning Cointrin Questionnaire
+
+## Load Data
+```{r}
+here::i_am("R/data_cleaning.Rmd")
+
+processed_data <- "../data/processed"
+raw_data <- "../data/raw"
+
+raw_data <- haven::read_sav(
+  file.path(
+    raw_data, "data_project_1074950_2025_12_05.sav"
+  )
+)
+```
+
+```{r}
+```
