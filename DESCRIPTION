@@ -1,0 +1,16 @@
+Package: CointrinQuestionnaire
+Type: ShinyApp
+Title: Cointrin Area Survey Questionnaire
+Version: 1.0.0
+Authors@R: person("EPFL-LASUR", email = "contact@epfl.ch", role = c("aut", "cre"))
+Description: Interactive questionnaire application for collecting survey data about the Cointrin area in Geneva.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    R (>= 3.5.0)
+Imports:
+    shiny (>= 1.7.0),
+    shinyjs (>= 2.0.0)
+Suggests:
+    testthat

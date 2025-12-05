@@ -47,3 +47,9 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# Questionnaire data files
+questionnaire_responses.csv
+
+# Generated plots
+plots/
