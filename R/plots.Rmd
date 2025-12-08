@@ -3,7 +3,6 @@
 ## Load data
 ```{r}
 here::i_am("R/plots.Rmd")
-source(here::here("R/util.R"))
 processed_data_folder <- "../data/processed"
 raw_data_folder <- "../data/raw"
 data <- haven::read_sav(
@@ -11,4 +10,56 @@ data <- haven::read_sav(
     processed_data_folder, "regrouped_data.sav"
   )
 )
+
+bar_plot_folder = file.path(processed_data_folder, "barplot")
+cross_plot_folder = file.path(processed_data_folder, "cross")
+
+excludedVars = c("lfdn", "timestamp", "duration", "lastpage", "browser", "ats", "cleaned", "date_of_first_mail", "date_of_last_access", "datetime", "device_type", "external_lfdn", "flash", "javascript", "language", "output_mode", "page_history", "participant_brand") # more to come
+```
+
+## Barplots
+```{r}
+for (variableName in names(data)) {
+  if (variableName %in% excludedVars) next
+
+  plot_data <- data
+  plot_data[[variableName]] <- haven::as_factor(data[[variableName]])
+
+  p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data[[variableName]])) +
+    ggplot2::geom_bar() +
+    ggplot2::labs(title = variableName) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+
+  plotname <- paste0(variableName, "_barplot.png")
+  ggplot2::ggsave(file.path(bar_plot_folder, plotname), plot = p, width = 8, height = 6)
+}
+```
+
+## Percent plots (idk about the name)
+```{r}
+vars2 <- c("v_6_r", "v_14_r", "v_15_r", "v_293", "v_601", "v_600")
+for (var1 in names(data)) {
+  if (var1 %in% excludedVars || var1 %in% vars2) next
+  for (var2 in vars2) {
+    plot_data <- data |>
+      dplyr::group_by(.data[[var1]], .data[[var2]]) |>
+      dplyr::summarise(count = dplyr::n(), .groups = "drop") |>
+      dplyr::rename(var1_col = 1, var2_col = 2) |>
+      dplyr::mutate(
+        var1_col = haven::as_factor(var1_col),
+        var2_col = haven::as_factor(var2_col)
+      )
+
+    g <- ggplot2::ggplot(plot_data, ggplot2::aes(x = var1_col, y = var2_col)) +
+      ggplot2::geom_point(ggplot2::aes(size = count), colour = "green") +
+      ggplot2::theme_bw() +
+      ggplot2::xlab(attr(data[[var1]], "label")[1]) +
+      ggplot2::ylab(attr(data[[var2]], "label")[1]) +
+      ggplot2::scale_size_continuous(range = c(5, 30)) +
+      ggplot2::geom_text(ggplot2::aes(label = count), vjust = -1)
+
+    plotname <- paste0(var1, "_x_", var2, ".png")
+    ggplot2::ggsave(file.path(cross_plot_folder, plotname), plot = g, width = 8, height = 6)
+  }
+}
 ```
