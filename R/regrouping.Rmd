@@ -1,0 +1,62 @@
+# Regrouping
+
+## Load cleaned data
+```{r}
+here::i_am("R/data_cleaning.Rmd")
+source(here::here("R/util.R"))
+
+processed_data_folder <- "../data/processed"
+raw_data_folder <- "../data/raw"
+
+data <- haven::read_sav(
+  file.path(
+    processed_data_folder, "cleaned_data.sav"
+  )
+)
+```
+
+## Regrouping
+```{r}
+data <- regroup_variable(data, "v_6", list("Meyrin" = c(1, 2), "Grand-Sacconex" = c(3, 4), "Vernier" = c(5)))
+
+data <- regroup_variable(data, "v_14", list("Moins de 25 ans" = c(1, 2, 3), "26 - 44 ans" = c(4), "45 - 64 ans" = c(5), "65 ans et plus" = c(6, 7)))
+
+data <- regroup_variable(data, "v_15", list("Propriétaire" = c(1), "Locataire" = c(2, 3, 4, 5)))
+
+data <- regroup_variable(data, "v_212", list("CH" = c(1), "C" = c(2), "Autre" = c(3, 4, 5, 6)))
+```
+
+## New variables
+```{r}
+data["v_600"] = 0
+data <- data |>
+  dplyr::mutate(
+    v_600 = ifelse(
+      v_328 %in% c(1, 2),
+      1,
+      0
+    )
+  )
+
+data[["v_600"]] <- haven::labelled(
+  data[["v_600"]],
+  labels = c("Utilisation fréquente" = 1, "Utilisation non fréquente" = 0),
+  label = "Utilisation de voiture personelle"
+)
+
+data["v_601"] = 0
+data <- data |>
+  dplyr::mutate(
+    v_601 = ifelse(
+      v_208 %in% c(2, 3, 4),
+      1,
+      0
+    )
+  )
+
+data[["v_601"]] <- haven::labelled(
+  data[["v_601"]],
+  labels = c("Enfant(s)" = 1, "Pas d'enfant(s)" = 0),
+  label = "Enfant(s)"
+)
+```
