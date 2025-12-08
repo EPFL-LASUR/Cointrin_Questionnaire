@@ -67,5 +67,5 @@ if (!dir.exists(processed_data_folder)) {
   dir.create(processed_data_folder, recursive = TRUE)
 }
 
-haven::write_sav(no_duplicates, file.path(processed_data_folder, "regrouped_data.sav"))
+haven::write_sav(data, file.path(processed_data_folder, "regrouped_data.sav"))
 ```
