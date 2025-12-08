@@ -60,3 +60,12 @@ data[["v_601"]] <- haven::labelled(
   label = "Enfant(s)"
 )
 ```
+
+## Save regrouped data
+```{r}
+if (!dir.exists(processed_data_folder)) {
+  dir.create(processed_data_folder, recursive = TRUE)
+}
+
+haven::write_sav(no_duplicates, file.path(processed_data_folder, "regrouped_data.sav"))
+```
