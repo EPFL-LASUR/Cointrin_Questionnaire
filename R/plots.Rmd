@@ -25,10 +25,13 @@ for (variableName in names(data)) {
   plot_data <- data
   plot_data[[variableName]] <- haven::as_factor(data[[variableName]])
 
+  len_labels = length(attr(data[[variableName]], "labels"))
+  if (len_labels >= 10 || len_labels <= 1) next
+
   p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data[[variableName]])) +
-    ggplot2::geom_bar() +
+    ggplot2::geom_bar(fill = "#69b3a2") +
     ggplot2::labs(title = variableName) +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 70, hjust = 1))
 
   plotname <- paste0(variableName, "_barplot.png")
   ggplot2::ggsave(file.path(bar_plot_folder, plotname), plot = p, width = 8, height = 6)
