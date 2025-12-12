@@ -3,6 +3,7 @@
 ## Load data
 ```{r}
 here::i_am("R/plots.Rmd")
+source(here::here("R/util.R"))
 processed_data_folder <- "../data/processed"
 raw_data_folder <- "../data/raw"
 data <- haven::read_sav(
@@ -22,19 +23,7 @@ excludedVars = c("lfdn", "timestamp", "duration", "lastpage", "browser", "ats", 
 for (variableName in names(data)) {
   if (variableName %in% excludedVars) next
 
-  plot_data <- data
-  plot_data[[variableName]] <- haven::as_factor(data[[variableName]])
-
-  len_labels = length(attr(data[[variableName]], "labels"))
-  if (len_labels >= 10 || len_labels <= 1) next
-
-  p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data[[variableName]])) +
-    ggplot2::geom_bar(fill = "#69b3a2") +
-    ggplot2::labs(title = variableName) +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 70, hjust = 1))
-
-  plotname <- paste0(variableName, "_barplot.png")
-  ggplot2::ggsave(file.path(bar_plot_folder, plotname), plot = p, width = 8, height = 6)
+  create_bar_plot(data, variableName, check_labels = TRUE, percent = TRUE)
 }
 ```
 
@@ -44,39 +33,7 @@ vars2 <- c("v_6_r", "v_14_r", "v_15_r", "v_293", "v_601", "v_600")
 for (var1 in names(data)) {
   if (var1 %in% excludedVars || var1 %in% vars2) next
   for (var2 in vars2) {
-    plot_data <- data |>
-      dplyr::filter(!is.na(.data[[var1]]), !is.na(.data[[var2]])) |>
-      dplyr::group_by(.data[[var1]], .data[[var2]]) |>
-      dplyr::summarise(count = dplyr::n(), .groups = "drop") |>
-      dplyr::rename(var1_col = 1, var2_col = 2) |>
-      dplyr::mutate(
-        var1_col = haven::as_factor(var1_col),
-        var2_col = haven::as_factor(var2_col)
-      )
-
-    if (nrow(plot_data) == 0) next
-
-    g <- ggplot2::ggplot(plot_data, ggplot2::aes(x = var1_col, y = var2_col, fill = count)) +
-      ggplot2::geom_tile(color = "white", linewidth = 0.5) +
-      ggplot2::geom_text(ggplot2::aes(label = count),
-        color = ifelse(plot_data$count == 0, "black", "white"),
-        size = 4, fontface = "bold"
-      ) +
-      ggplot2::scale_fill_gradientn(
-        colors = c("#E0E0E0", "#3B9AB2", "#F21A00"),
-        values = scales::rescale(c(0, 0.01, max(plot_data$count))),
-        limits = c(0, NA)
-      ) +
-      ggplot2::theme_minimal() +
-      ggplot2::xlab(attr(data[[var1]], "label")[1]) +
-      ggplot2::ylab(attr(data[[var2]], "label")[1]) +
-      ggplot2::theme(
-        axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-        panel.grid = ggplot2::element_blank()
-      )
-
-    plotname <- paste0(var1, "_x_", var2, ".png")
-    ggplot2::ggsave(file.path(cross_plot_folder, plotname), plot = g, width = 8, height = 6)
+    create_heat_map(data, var1, var2, check_labels = TRUE, percent = TRUE)
   }
 }
 ```
