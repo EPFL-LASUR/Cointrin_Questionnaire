@@ -3,7 +3,21 @@ bar_plot_folder = file.path(processed_data_folder, "barplot")
 cross_plot_folder = file.path(processed_data_folder, "cross")
 
 
-
+#' Creates a bar plot for a specified variable and saves it
+#'
+#' \code{create_bar_plot} Creates a bar plot for a specified variable and saves it
+#'
+#' @param data Data frame, data frame containing data to plot
+#' @param variableName String, variable to consider
+#' @param outFile String, name of the output file name. default: [var name]_barplot.jpg
+#' @param check_labels bool, flag to check the ammount of different possible answers to exclude open text answer
+#' @param remove_na bool, flag to remove NA from plot
+#' @param percent bool, flag to choose data representation on plot (true: percents, false: count)
+#'
+#' @inheritParms rlang::args_dot_used
+#'
+#' @return Plot
+#'
 create_bar_plot <- function(data, variableName, ..., outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = FALSE) {
   if (variableName %in% names(data)) {
     plot_data <- data
@@ -11,6 +25,11 @@ create_bar_plot <- function(data, variableName, ..., outFileName = "", check_lab
     plot_data[[variableName]] <- haven::as_factor(data[[variableName]])
 
     len_labels = length(attr(data[[variableName]], "labels"))
+
+    if (remove_na) {
+      plot_data <- plot_data |>
+        dplyr::filter(!is.na(.data[[variableName]]))
+    }
 
     if (check_labels && (len_labels >= 10 || len_labels <= 1)) {
       warning("Too many or too few labels")
@@ -23,19 +42,36 @@ create_bar_plot <- function(data, variableName, ..., outFileName = "", check_lab
         title = variableName,
         y = if (percent) "Percentage (%)" else "Count"
       ) +
-      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 70, hjust = 1))
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 70, hjust = 1)) +
+      ggplot2::theme_minimal()
 
     if (outFileName == "") {
       outFileName <- paste0(variableName, "_barplot.png")
     }
 
     ggplot2::ggsave(file.path(bar_plot_folder, outFileName), plot = p)
+
+    return(p)
   } else {
     stop(paste0(variableName, " is not a variable in the dataset provided."))
   }
 }
 
-
+#' Creates a heat map for two specified variables and saves it.
+#'
+#' \code{create_heat_map} Creates a heat map for two specified variables and saves it.
+#'
+#' @param data Data frame, data frame containing data to plot
+#' @param variableName String, variable to consider
+#' @param outFile String, name of the output file name. default: [var name]_barplot.jpg
+#' @param check_labels bool, flag to check the ammount of different possible answers to exclude open text answer
+#' @param remove_na bool, flag to remove NA from plot
+#' @param percent bool, flag to choose data representation on plot (true: percents, false: count)
+#'
+#' @inheritParms rlang::args_dot_used
+#'
+#' @return Plot
+#'
 create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = FALSE) {
   if (var1 %in% names(data) && var2 %in% names(data)) {
     len_labels_var1 <- length(attr(data[[var1]], "labels"))
@@ -70,7 +106,7 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
       plot_data <- plot_data |>
         dplyr::mutate(
           percentage = count / sum(count) * 100,
-          label_text = sprintf("%.1f%%", percentage)
+          label_text = as.character(round(percentage))
         )
       fill_var <- "percentage"
       label_var <- "label_text"
@@ -87,14 +123,8 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
 
     g <- ggplot2::ggplot(plot_data, ggplot2::aes(x = var1_col, y = var2_col, fill = .data[[fill_var]])) +
       ggplot2::geom_tile(color = "white", linewidth = 0.5) +
-      ggplot2::geom_text(ggplot2::aes(label = .data[[label_var]]),
-        color = "white",
-        size = 4, fontface = "bold"
-      ) +
-      ggplot2::scale_fill_gradientn(
-        colors = c("#adacac", "#c97f7f", "#ff0000"),
-        values = scales::rescale(c(0, 0.01, max(plot_data[[fill_var]]))),
-        limits = c(0, NA),
+      ggplot2::scale_fill_viridis_c(
+        option = "plasma",
         name = if (percent) "Percentage (%)" else "Count"
       ) +
       ggplot2::theme_minimal() +
@@ -105,15 +135,18 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
         panel.grid = ggplot2::element_blank()
       ) +
       ggplot2::geom_text(ggplot2::aes(label = .data[[label_var]]),
-        color = "black",
+        color = "white",
         size = 4, fontface = "bold"
       )
+
 
     if (outFileName == "") {
       outFileName <- paste0(var1, "_x_", var2, ".png")
     }
 
     ggplot2::ggsave(file.path(cross_plot_folder, outFileName), plot = g)
+
+    return(g)
   } else {
     stop("At least one variable is not in provided data.")
   }

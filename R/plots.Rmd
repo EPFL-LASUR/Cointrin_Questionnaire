@@ -23,7 +23,7 @@ excludedVars = c("lfdn", "timestamp", "duration", "lastpage", "browser", "ats", 
 for (variableName in names(data)) {
   if (variableName %in% excludedVars) next
 
-  create_bar_plot(data, variableName, check_labels = TRUE, percent = TRUE)
+  create_bar_plot(data, variableName, check_labels = TRUE)
 }
 ```
 
@@ -36,4 +36,14 @@ for (var1 in names(data)) {
     create_heat_map(data, var1, var2, check_labels = TRUE, percent = TRUE)
   }
 }
+```
+
+
+```{r}
+create_heat_map(data, "v_6_r", "v_14_r", percent = TRUE)
+```
+
+
+```{r}
+create_bar_plot(data, "v_6_r")
 ```
