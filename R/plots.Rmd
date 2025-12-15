@@ -45,5 +45,5 @@ create_heat_map(data, "v_6_r", "v_14_r", percent = TRUE)
 
 
 ```{r}
-create_bar_plot(data, "v_6_r")
+create_bar_plot(data, "v_6_r", percent = TRUE)
 ```
