@@ -175,12 +175,13 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
 #' @param remove_na bool, flag to remove NA values from plot. Default: TRUE
 #' @param location_var String, variable name containing location codes (v_6). Default: "v_6"
 #' @param answer_filter Numeric or String, specific answer value to filter for. If NULL, counts all responses. Default: NULL
+#' @param percent bool, flag to display percentages instead of counts. Default: FALSE
 #'
 #' @inheritParams rlang::args_dot_used
 #'
 #' @return Plot (ggplot2 object with sf geometries)
 #'
-plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, location_var = "v_6", answer_filter = NULL) {
+plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, location_var = "v_6", answer_filter = NULL, percent = FALSE) {
   if (!var %in% names(data)) {
     stop(paste0(var, " is not a variable in the dataset provided."))
   }
@@ -237,13 +238,38 @@ plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, loca
     dplyr::group_by(v_6_code = as.numeric(.data[[location_var]])) |>
     dplyr::summarise(total_count = dplyr::n(), .groups = "drop")
 
+  # Calculate percentage if requested
+  if (percent) {
+    total_responses <- sum(summary_data$total_count)
+    summary_data <- summary_data |>
+      dplyr::mutate(
+        percentage = (total_count / total_responses) * 100,
+        display_value = round(percentage, 0)
+      )
+  } else {
+    summary_data <- summary_data |>
+      dplyr::mutate(display_value = total_count)
+  }
+
   # Join with map data
   map_data <- neigh_map_5 |>
     dplyr::left_join(summary_data, by = "v_6_code")
 
-  # Replace NA counts with 0
-  map_data <- map_data |>
-    dplyr::mutate(total_count = ifelse(is.na(total_count), 0, total_count))
+  # Replace NA values with 0
+  if (percent) {
+    map_data <- map_data |>
+      dplyr::mutate(
+        total_count = ifelse(is.na(total_count), 0, total_count),
+        percentage = ifelse(is.na(percentage), 0, percentage),
+        display_value = ifelse(is.na(display_value), 0, display_value)
+      )
+  } else {
+    map_data <- map_data |>
+      dplyr::mutate(
+        total_count = ifelse(is.na(total_count), 0, total_count),
+        display_value = ifelse(is.na(display_value), 0, display_value)
+      )
+  }
 
   # Create plot with labels
   # Get the answer label for subtitle if filtering
@@ -258,12 +284,16 @@ plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, loca
     paste("Variable:", var)
   }
 
+  # Determine fill variable and labels
+  fill_var <- if (percent) "percentage" else "total_count"
+  legend_name <- if (percent) "Percentage (%)" else "Count"
+
   p <- ggplot2::ggplot(map_data) +
-    ggplot2::geom_sf(ggplot2::aes(fill = total_count), color = "black", linewidth = 0.8) +
-    ggplot2::geom_sf_text(ggplot2::aes(label = total_count), color = "white", size = 6, fontface = "bold") +
+    ggplot2::geom_sf(ggplot2::aes(fill = .data[[fill_var]]), color = "black", linewidth = 0.8) +
+    ggplot2::geom_sf_text(ggplot2::aes(label = display_value), color = "white", size = 6, fontface = "bold") +
     ggplot2::scale_fill_viridis_c(
       option = "plasma",
-      name = "Count",
+      name = legend_name,
       na.value = "grey90",
       begin = 0.1,
       end = 0.9
