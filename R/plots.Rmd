@@ -18,7 +18,7 @@ cross_plot_folder = file.path(processed_data_folder, "cross")
 excludedVars = c("lfdn", "timestamp", "duration", "lastpage", "browser", "ats", "cleaned", "date_of_first_mail", "date_of_last_access", "datetime", "device_type", "external_lfdn", "flash", "javascript", "language", "output_mode", "page_history", "participant_brand") # more to come
 ```
 
-## Barplots
+## Create all Barplots
 ```{r}
 for (variableName in names(data)) {
   if (variableName %in% excludedVars) next
@@ -27,7 +27,7 @@ for (variableName in names(data)) {
 }
 ```
 
-## Heatmaps
+## Create all Heatmaps
 ```{r}
 vars2 <- c("v_6_r", "v_14_r", "v_15_r", "v_293", "v_601", "v_600")
 for (var1 in names(data)) {

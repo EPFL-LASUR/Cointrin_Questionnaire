@@ -45,14 +45,10 @@ create_bar_plot <- function(data, variableName, ..., outFileName = "", check_lab
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 70, hjust = 1)) +
       ggplot2::theme_minimal() +
       ggplot2::theme(
-        panel.background = ggplot2::element_blank(),
-        plot.background = ggplot2::element_blank(),
+        # panel.background = ggplot2::element_blank(),
+        # plot.background = ggplot2::element_blank(),
         panel.grid.major = ggplot2::element_blank(),
         panel.grid.minor = ggplot2::element_blank()
-      ) +
-      ggplot2::geom_text(ggplot2::aes(label = .data[[label_var]]),
-        color = "white",
-        size = 4, fontface = "bold"
       )
 
     if (outFileName == "") {
