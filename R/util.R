@@ -45,8 +45,6 @@ create_bar_plot <- function(data, variableName, ..., outFileName = "", check_lab
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 70, hjust = 1)) +
       ggplot2::theme_minimal() +
       ggplot2::theme(
-        # panel.background = ggplot2::element_blank(),
-        # plot.background = ggplot2::element_blank(),
         panel.grid.major = ggplot2::element_blank(),
         panel.grid.minor = ggplot2::element_blank()
       )
@@ -130,7 +128,6 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
     g <- ggplot2::ggplot(plot_data, ggplot2::aes(x = var1_col, y = var2_col, fill = .data[[fill_var]])) +
       ggplot2::geom_tile(color = "white", linewidth = 0.5) +
       ggplot2::scale_fill_viridis_c(
-        option = "plasma",
         name = if (percent) "Percentage (%)" else "Count"
       ) +
       ggplot2::coord_fixed() +
@@ -288,7 +285,6 @@ plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, loca
     ggplot2::geom_sf(ggplot2::aes(fill = .data[[fill_var]]), color = "black", linewidth = 0.8) +
     ggplot2::geom_sf_text(ggplot2::aes(label = display_value), color = "white", size = 6, fontface = "bold") +
     ggplot2::scale_fill_viridis_c(
-      option = "plasma",
       name = legend_name,
       na.value = "grey90",
       begin = 0.1,
