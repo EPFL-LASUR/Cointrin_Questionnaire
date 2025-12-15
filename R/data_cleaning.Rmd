@@ -21,7 +21,7 @@ no_tester <- dplyr::filter(raw_data, tester != 1)
 ```
 
 
-## Remove users that answered with an other aphabet/language
+## Remove users that answered with another aphabet/language
 ```{r}
 french <- dplyr::filter(no_tester, !lfdn %in% c(56, 192, 221, 396, 1393, 380, 426, 493, 473, 708, 723))
 ```
