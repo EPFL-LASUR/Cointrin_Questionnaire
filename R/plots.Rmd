@@ -47,3 +47,8 @@ create_heat_map(data, "v_6_r", "v_14_r", percent = TRUE)
 ```{r}
 create_bar_plot(data, "v_6_r", percent = TRUE)
 ```
+
+
+```{r}
+plot_on_map(data, "v_15", answer_filter = 1)
+```

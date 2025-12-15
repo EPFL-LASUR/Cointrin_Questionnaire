@@ -162,3 +162,138 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
     stop("At least one variable is not in provided data.")
   }
 }
+
+#' Creates a map visualization showing response distribution across geographic sectors
+#'
+#' \code{plot_on_map} Creates a choropleth map displaying the total count of responses
+#' for a given variable across different geographic sectors. The map uses a shapefile
+#' to visualize five specific sectors around Cointrin area.
+#'
+#' @param data Data frame, data frame containing data to plot
+#' @param var String, variable to consider for counting responses
+#' @param outFileName String, name of the output file. Default: [var]_map.png
+#' @param remove_na bool, flag to remove NA values from plot. Default: TRUE
+#' @param location_var String, variable name containing location codes (v_6). Default: "v_6"
+#' @param answer_filter Numeric or String, specific answer value to filter for. If NULL, counts all responses. Default: NULL
+#'
+#' @inheritParams rlang::args_dot_used
+#'
+#' @return Plot (ggplot2 object with sf geometries)
+#'
+plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, location_var = "v_6", answer_filter = NULL) {
+  if (!var %in% names(data)) {
+    stop(paste0(var, " is not a variable in the dataset provided."))
+  }
+
+  if (!location_var %in% names(data)) {
+    stop(paste0(location_var, " is not a variable in the dataset provided."))
+  }
+
+  # Read shapefile
+  neigh_map <- sf::st_read("../data/raw/GEO_GIREC.shp", quiet = TRUE)
+
+  # Filter to selected sectors
+  selected_sectors <- c(
+    "Cointrin - Les Sapins", "Cointrin - Les Ailes",
+    "Grand-Saconnex - Marais", "Vernier - Cointrin", "Le Jonc"
+  )
+
+  neigh_map_5 <- neigh_map |>
+    dplyr::filter(NOM %in% selected_sectors) |>
+    dplyr::mutate(
+      sector = dplyr::recode(NOM,
+        "Cointrin - Les Sapins"      = "Sapins",
+        "Cointrin - Les Ailes"       = "Ailes",
+        "Grand-Saconnex - Marais"    = "Marais",
+        "Vernier - Cointrin"         = "VernierCointrin",
+        "Le Jonc"                    = "Jonc"
+      ),
+      v_6_code = dplyr::case_when(
+        sector == "Sapins" ~ 1,
+        sector == "Ailes" ~ 2,
+        sector == "Marais" ~ 3,
+        sector == "Jonc" ~ 4,
+        sector == "VernierCointrin" ~ 5,
+        TRUE ~ NA_real_
+      )
+    )
+
+  # Prepare data
+  plot_data <- data
+
+  if (remove_na) {
+    plot_data <- plot_data |>
+      dplyr::filter(!is.na(.data[[var]]), !is.na(.data[[location_var]]))
+  }
+
+  # Filter for specific answer if provided (using numeric code before converting to factor)
+  if (!is.null(answer_filter)) {
+    plot_data <- plot_data |>
+      dplyr::filter(as.numeric(.data[[var]]) == answer_filter)
+  }
+
+  # Aggregate data by v_6 code
+  summary_data <- plot_data |>
+    dplyr::group_by(v_6_code = as.numeric(.data[[location_var]])) |>
+    dplyr::summarise(total_count = dplyr::n(), .groups = "drop")
+
+  # Join with map data
+  map_data <- neigh_map_5 |>
+    dplyr::left_join(summary_data, by = "v_6_code")
+
+  # Replace NA counts with 0
+  map_data <- map_data |>
+    dplyr::mutate(total_count = ifelse(is.na(total_count), 0, total_count))
+
+  # Create plot with labels
+  # Get the answer label for subtitle if filtering
+  subtitle_text <- if (!is.null(answer_filter)) {
+    answer_label <- names(attr(data[[var]], "labels"))[attr(data[[var]], "labels") == answer_filter]
+    if (length(answer_label) > 0) {
+      paste("Variable:", attr(data[[var]], "label"), "| Answer:", answer_label)
+    } else {
+      paste("Variable:", var, "| Answer code:", answer_filter)
+    }
+  } else {
+    paste("Variable:", var)
+  }
+
+  p <- ggplot2::ggplot(map_data) +
+    ggplot2::geom_sf(ggplot2::aes(fill = total_count), color = "black", linewidth = 0.8) +
+    ggplot2::geom_sf_text(ggplot2::aes(label = total_count), color = "white", size = 6, fontface = "bold") +
+    ggplot2::scale_fill_viridis_c(
+      option = "plasma",
+      name = "Count",
+      na.value = "grey90",
+      begin = 0.1,
+      end = 0.9
+    ) +
+    ggplot2::labs(
+      title = paste("Distribution of Responses by Sector"),
+      subtitle = subtitle_text
+    ) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      panel.background = ggplot2::element_blank(),
+      panel.grid = ggplot2::element_blank(),
+      axis.text = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank(),
+      axis.title.x = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_blank(),
+      plot.title = ggplot2::element_text(hjust = 0.5, size = 14, face = "bold"),
+      plot.subtitle = ggplot2::element_text(hjust = 0.5, size = 12)
+    )
+
+  # Save plot
+  if (outFileName == "") {
+    if (!is.null(answer_filter)) {
+      outFileName <- paste0(var, "_", answer_filter, "_map.png")
+    } else {
+      outFileName <- paste0(var, "_map.png")
+    }
+  }
+
+  ggplot2::ggsave(file.path(processed_data_folder, outFileName), plot = p, width = 10, height = 8)
+
+  return(p)
+}
