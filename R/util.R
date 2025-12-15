@@ -1,3 +1,23 @@
+#' Regroup a variable into fewer categories
+#'
+#' Creates a new regrouped variable by combining multiple values into new categories.
+#' The new variable is named with "_r" suffix and inherits the original variable's label.
+#'
+#' @param data A data frame containing the variable to regroup
+#' @param var_name Character string of the variable name to regroup
+#' @param groups A named list where names are new category labels and values are
+#'   numeric vectors of original values to combine.
+#'   Example: list("Group A" = c(1,2), "Group B" = c(3,4))
+#' @param new_labels Optional named vector of labels for the new categories.
+#'   If NULL, uses sequential integers with group names as labels
+#'
+#' @return The data frame with the new regrouped variable added
+#'
+#' @examples
+#' data <- regroup_variable(
+#'   data, "age",
+#'   list("Young" = c(1, 2, 3), "Old" = c(4, 5))
+#' )
 regroup_variable <- function(data, var_name, groups, new_labels = NULL) {
   # groups is a named list: list("Meyrin" = c(1,2), "Grand-Saconnex" = c(3,4))
 
@@ -37,5 +57,31 @@ regroup_variable <- function(data, var_name, groups, new_labels = NULL) {
     label = var_label
   )
 
+  return(data)
+}
+
+
+#' Apply multiple variable regroupings
+#'
+#' Applies regrouping to multiple variables based on a dictionary specification.
+#' Each variable is regrouped according to its entry in the dictionary.
+#'
+#' @param data A data frame containing variables to regroup
+#' @param dict A named list where names are variable names and values are
+#'   regrouping specifications (named lists of value combinations).
+#'   Example: list("v_6" = list("Meyrin" = c(1,2), "Other" = c(3,4)))
+#'
+#' @return The data frame with all regrouped variables added
+#'
+#' @examples
+#' dict <- list(
+#'   "age" = list("Young" = c(1, 2), "Old" = c(3, 4)),
+#'   "city" = list("Geneva" = c(1), "Other" = c(2, 3))
+#' )
+#' data <- regroup_data(data, dict)
+regroup_data <- function(data, dict) {
+  for (name in names(dict)) {
+    data <- regroup_variable(data, name, dict[[name]])
+  }
   return(data)
 }

@@ -17,13 +17,30 @@ data <- haven::read_sav(
 
 ## Regrouping
 ```{r}
-data <- regroup_variable(data, "v_6", list("Meyrin" = c(1, 2), "Grand-Sacconex" = c(3, 4), "Vernier" = c(5)))
+regrouping_dict = list(
+  "v_6" = list(
+    "Meyrin" = c(1, 2),
+    "Grand-Sacconex" = c(3, 4),
+    "Vernier" = c(5)
+  ),
+  "v_14" = list(
+    "Moins de 25 ans" = c(1, 2, 3),
+    "26 - 44 ans" = c(4),
+    "45- 64 ans" = c(5),
+    "65 ans et pklus" = c(6, 7)
+  ),
+  "v_15" = list(
+    "Propriétaire" = c(1),
+    "Locataire" = c(2, 3, 4, 5)
+  ),
+  "v_212" = list(
+    "CH" = c(1),
+    "C" = c(2),
+    "Autre" = c(3, 4, 5, 6)
+  )
+)
 
-data <- regroup_variable(data, "v_14", list("Moins de 25 ans" = c(1, 2, 3), "26 - 44 ans" = c(4), "45 - 64 ans" = c(5), "65 ans et plus" = c(6, 7)))
-
-data <- regroup_variable(data, "v_15", list("Propriétaire" = c(1), "Locataire" = c(2, 3, 4, 5)))
-
-data <- regroup_variable(data, "v_212", list("CH" = c(1), "C" = c(2), "Autre" = c(3, 4, 5, 6)))
+data <- regroup_data(data, regrouping_dict)
 ```
 
 ## New variables
