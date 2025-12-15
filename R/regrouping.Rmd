@@ -19,9 +19,12 @@ data <- haven::read_sav(
 ```{r}
 regrouping_dict = list(
   "v_6" = list(
-    "Meyrin" = c(1, 2),
-    "Grand-Sacconex" = c(3, 4),
-    "Vernier" = c(5)
+    "Ailes" = c(1),
+    "Sapins" = c(2),
+    "Jonc" = c(3),
+    "Marais" = c(4),
+    "VernierCointrin" = c(5),
+    "Autres" = c(6)
   ),
   "v_14" = list(
     "Moins de 25 ans" = c(1, 2, 3),
@@ -100,6 +103,13 @@ data[["v_602"]] <- haven::labelled(
   labels = c("Je n'ai pas de places de stationnement privée" = 0, "Pas important" = 1, "Plutôt pas important" = 2, "Plutôt important" = 3, "Très important" = 4, "Pas de réponce" = -99),
   label = "À quel point est-il important pour vous d'avoir une place de stationnement privée ?"
 )
+
+# data <- data |>
+#  dplyr::mutate(
+#    v_603 = ifelse(
+#      v_6 %in% c(1,2),
+#    )
+#  )
 
 
 logement_list = c("v_68", "v_69", "v_70", "v_71", "v_271", "v_242", "v_72", "v_73", "v_272", "v_273", "v_274", "v_275", "v_276")
