@@ -288,7 +288,8 @@ plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, loca
       name = legend_name,
       na.value = "grey90",
       begin = 0.1,
-      end = 0.9
+      end = 0.9,
+      direction = -1
     ) +
     ggplot2::labs(
       title = paste("Distribution of Responses by Sector"),

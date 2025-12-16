@@ -40,7 +40,7 @@ for (var1 in names(data)) {
 
 
 ```{r}
-create_heat_map(data, "v_6_r", "v_14_r", percent = TRUE)
+create_heat_map(data, "v_6_r", "v_14_r")
 ```
 
 
@@ -50,5 +50,5 @@ create_bar_plot(data, "v_6_r", percent = TRUE)
 
 
 ```{r}
-plot_on_map(data, "v_15", answer_filter = 1, percent = TRUE)
+plot_on_map(data, "v_15", answer_filter = 1)
 ```
