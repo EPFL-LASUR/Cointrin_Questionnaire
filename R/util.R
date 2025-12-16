@@ -128,7 +128,8 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
     g <- ggplot2::ggplot(plot_data, ggplot2::aes(x = var1_col, y = var2_col, fill = .data[[fill_var]])) +
       ggplot2::geom_tile(color = "white", linewidth = 0.5) +
       ggplot2::scale_fill_viridis_c(
-        name = if (percent) "Percentage (%)" else "Count"
+        name = if (percent) "Percentage (%)" else "Count",
+        direction = -1
       ) +
       ggplot2::coord_fixed() +
       ggplot2::theme_minimal() +
