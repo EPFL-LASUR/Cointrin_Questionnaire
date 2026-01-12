@@ -1,18 +1,20 @@
 # Data Cleaning Cointrin Questionnaire
-This notebook is used to clean invalid answers from the dataset. I should be ran first in the pipeline.
+This notebook is used to clean invalid answers from the dataset. It should be ran first in the pipeline.
 
 ## Load Data
 This code block loads every needed data and code. It also creates variables containing the path to some folders that are or will contain data.
 ```{r}
-here::i_am("R/data_cleaning.Rmd")
-source(here::here("R/util.R"))
+here::i_am(file.path("R", "data_cleaning.Rmd"))
+source(here::here(file.path("R", "util.R")))
 
-processed_data_folder <- "../data/processed"
-raw_data_folder <- "../data/raw"
+filename <- "data_project_1074950_2025_12_05.sav" # Change the name if needed
+
+processed_data_folder <- file.path("..", "data", "processed")
+raw_data_folder <- file.path("..", "data", "raw")
 
 raw_data <- haven::read_sav(
   file.path(
-    raw_data_folder, "data_project_1074950_2025_12_05.sav"
+    raw_data_folder, filename
   )
 )
 ```
@@ -25,7 +27,7 @@ no_tester <- dplyr::filter(raw_data, tester != 1)
 
 
 ## Remove users that answered with another aphabet/language
-In this code block, we are removing users that answered to open questions in an other language than french.
+In this code block, we are removing users that answered to at least one open questions in an other language than french.
 ```{r}
 french <- dplyr::filter(no_tester, !lfdn %in% c(56, 192, 221, 396, 1393, 380, 426, 493, 473, 708, 723))
 ```
@@ -33,7 +35,6 @@ french <- dplyr::filter(no_tester, !lfdn %in% c(56, 192, 221, 396, 1393, 380, 42
 ## Remove Duplicates
 In this code block, we are trying to catch peoples that answered multiples times to the questionnaire. The duplicates list is a hand made list that contains users who had suspect answers in the open questions.
 ```{r}
-# check with Hugo
 duplicates <- c(c(848, 847), c(509, 504), c(662, 661), c(139, 138), c(745, 744), c(1373, 1372))
 no_duplicates <- french
 for (couple in duplicates) {
