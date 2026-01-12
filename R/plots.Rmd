@@ -1,0 +1,67 @@
+# Plots
+This notebook is used to generate plots about a dataset.
+
+## Load data
+This code block loads all the data that we need to create plots. It also imports the functions to create the graphs.
+```{r}
+here::i_am("R/plots.Rmd")
+source(here::here("R/util.R"))
+processed_data_folder <- "../data/processed"
+raw_data_folder <- "../data/raw"
+data <- haven::read_sav(
+  file.path(
+    processed_data_folder, "regrouped_data.sav"
+  )
+)
+
+bar_plot_folder = file.path(processed_data_folder, "barplot")
+cross_plot_folder = file.path(processed_data_folder, "cross")
+
+excludedVars = c("lfdn", "timestamp", "duration", "lastpage", "browser", "ats", "cleaned", "date_of_first_mail", "date_of_last_access", "datetime", "device_type", "external_lfdn", "flash", "javascript", "language", "output_mode", "page_history", "participant_brand") # more to come
+```
+
+## Bar plots
+
+### Create one barplot
+This code block generates a barplot for a variable of your choice. first argument is the dataset to use and the second argument is the variable to use.
+```{r}
+create_bar_plot(data, "v_6_r", percent = TRUE)
+```
+
+### Create all Barplots
+This code block loops in all the variables present in the dataset and creates all possible barplots.
+```{r}
+for (variableName in names(data)) {
+  if (variableName %in% excludedVars) next
+
+  create_bar_plot(data, variableName, check_labels = TRUE)
+}
+```
+
+## Plot on map
+
+### Plot data on the map
+This code block plots a variable on the map of Cointrin. the first argument is the dataset to use and the second argument is the variable to plot on the map.
+```{r}
+plot_on_map(data, "v_15")
+```
+
+## Heatmaps
+
+### Create one Heatmap
+This code block generates a heat map between variables of your choice. the first argument is the dataset to use, second and third argument are the names of the variables to use in the heat map.
+```{r}
+create_heat_map(data, "v_6_r", "v_14_r")
+```
+
+## Create all Heatmaps
+This code block loops in all variables and creates a heat map comparing them to some selected variables in the dataset. For example every variable will be compared with the place of residence, their age and some other variables.
+```{r}
+vars2 <- c("v_6_r", "v_14_r", "v_15_r", "v_293", "v_601", "v_600")
+for (var1 in names(data)) {
+  if (var1 %in% excludedVars || var1 %in% vars2) next
+  for (var2 in vars2) {
+    create_heat_map(data, var1, var2, check_labels = TRUE, percent = TRUE)
+  }
+}
+```
