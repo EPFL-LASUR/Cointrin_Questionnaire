@@ -1,6 +1,7 @@
 # Data Cleaning Cointrin Questionnaire
 
 ## Load Data
+This code block loads every needed data and code. It also creates variables containing the path to some folders that are or will contain data.
 ```{r}
 here::i_am("R/data_cleaning.Rmd")
 source(here::here("R/util.R"))
@@ -16,17 +17,20 @@ raw_data <- haven::read_sav(
 ```
 
 ## Remove tester answers
+This code block removes all test questionnaires that have been filled during the making of the questionnaire.
 ```{r}
 no_tester <- dplyr::filter(raw_data, tester != 1)
 ```
 
 
 ## Remove users that answered with another aphabet/language
+In this code block, we are removing users that answered to open questions in an other language than french.
 ```{r}
 french <- dplyr::filter(no_tester, !lfdn %in% c(56, 192, 221, 396, 1393, 380, 426, 493, 473, 708, 723))
 ```
 
 ## Remove Duplicates
+In this code block, we are trying to catch peoples that answered multiples times to the questionnaire. The duplicates list is a hand made list that contains users who had suspect answers in the open questions.
 ```{r}
 # check with Hugo
 duplicates <- c(c(848, 847), c(509, 504), c(662, 661), c(139, 138), c(745, 744), c(1373, 1372))
@@ -40,6 +44,7 @@ for (couple in duplicates) {
 ```
 
 ## Save cleaned file
+Here, we save the cleaned data in the processed data folder.
 ```{r}
 if (!dir.exists(processed_data_folder)) {
   dir.create(processed_data_folder, recursive = TRUE)
