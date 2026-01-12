@@ -1,4 +1,5 @@
 # Plots
+This notebook is used to generate plots about a dataset.
 
 ## Load data
 This code block loads all the data that we need to create plots. It also imports the functions to create the graphs.
