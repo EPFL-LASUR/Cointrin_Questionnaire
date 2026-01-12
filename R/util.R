@@ -168,14 +168,14 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
 #' @param outFileName String, name of the output file. Default: [var]_map.png
 #' @param remove_na bool, flag to remove NA values from plot. Default: TRUE
 #' @param location_var String, variable name containing location codes (v_6). Default: "v_6"
-#' @param answer_filter Numeric or String, specific answer value to filter for. If NULL, counts all responses. Default: NULL
 #' @param percent bool, flag to display percentages instead of counts. Default: FALSE
 #'
 #' @inheritParams rlang::args_dot_used
 #'
 #' @return Plot (ggplot2 object with sf geometries)
 #'
-plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, location_var = "v_6", answer_filter = NULL, percent = FALSE) {
+plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, location_var = "v_6", percent = FALSE) {
+  answer_filter = NULL
   if (!var %in% names(data)) {
     stop(paste0(var, " is not a variable in the dataset provided."))
   }
@@ -221,15 +221,9 @@ plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, loca
       dplyr::filter(!is.na(.data[[var]]), !is.na(.data[[location_var]]))
   }
 
-  # Filter for specific answer if provided (using numeric code before converting to factor)
-  if (!is.null(answer_filter)) {
-    plot_data <- plot_data |>
-      dplyr::filter(as.numeric(.data[[var]]) == answer_filter)
-  }
-
   # Aggregate data by v_6 code
   summary_data <- plot_data |>
-    dplyr::group_by(v_6_code = as.numeric(.data[[location_var]])) |>
+    dplyr::group_by(v_6_code = as.numeric(.data[[location_var]]), .data[[var]]) |>
     dplyr::summarise(total_count = dplyr::n(), .groups = "drop")
 
   # Calculate percentage if requested
@@ -284,7 +278,8 @@ plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, loca
 
   p <- ggplot2::ggplot(map_data) +
     ggplot2::geom_sf(ggplot2::aes(fill = .data[[fill_var]]), color = "black", linewidth = 0.8) +
-    ggplot2::geom_sf_text(ggplot2::aes(label = display_value), color = "white", size = 6, fontface = "bold") +
+    ggplot2::geom_sf_text(ggplot2::aes(label = display_value), color = "white", fontface = "bold", label.size = NA, ..., size = 100) +
+    ggplot2::scale_size(range = c(10, 12)) +
     ggplot2::scale_fill_viridis_c(
       name = legend_name,
       na.value = "grey90",
@@ -306,12 +301,17 @@ plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, loca
       axis.title.y = ggplot2::element_blank(),
       plot.title = ggplot2::element_text(hjust = 0.5, size = 14, face = "bold"),
       plot.subtitle = ggplot2::element_text(hjust = 0.5, size = 12)
+    ) +
+    ggplot2::facet_wrap(
+      ggplot2::vars(
+        v_15
+      )
     )
 
   # Save plot
   if (outFileName == "") {
     if (!is.null(answer_filter)) {
-      outFileName <- paste0(var, "_", answer_filter, "_map.png")
+      outFileName <- paste0(var, "_", "_map.png")
     } else {
       outFileName <- paste0(var, "_map.png")
     }
