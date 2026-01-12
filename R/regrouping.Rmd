@@ -1,14 +1,14 @@
 # Regrouping
-This notebook regroups the variable in a more usable way. This notebook should be ran on a cleaned dataset.
+This notebook regroups the variable in a more usable way. This notebook should be ran on the cleaned dataset from the data cleaning notebook.
 
 ## Load cleaned data
 This code block loads the data, paths and functions used in this notebook.
 ```{r}
-here::i_am("R/data_cleaning.Rmd")
-source(here::here("R/util.R"))
+here::i_am(file.path("R", "data_cleaning.Rmd"))
+source(here::here(file.path("R", "util.R")))
 
-processed_data_folder <- "../data/processed"
-raw_data_folder <- "../data/raw"
+processed_data_folder <- file.path("..", "data", "processed")
+raw_data_folder <- file.path("..", "data", "raw")
 
 data <- haven::read_sav(
   file.path(
@@ -52,34 +52,15 @@ data <- regroup_data(data, regrouping_dict)
 ## New variables
 This code block creates new variable in the dataset. For example one of the new questions tells if the user uses their personal car often or not.
 ```{r}
-data["v_600"] = 0
-data <- data |>
-  dplyr::mutate(
-    v_600 = ifelse(
-      v_328 %in% c(1, 2),
-      1,
-      0
-    )
-  )
 
 data[["v_600"]] <- haven::labelled(
-  data[["v_600"]],
+  ifelse(data$v_328 %in% c(1,2), 1, 0),
   labels = c("Utilisation fréquente" = 1, "Utilisation non fréquente" = 0),
   label = "Utilisation de voiture personelle"
 )
 
-data["v_601"] = 0
-data <- data |>
-  dplyr::mutate(
-    v_601 = ifelse(
-      v_208 %in% c(2, 3, 4),
-      1,
-      0
-    )
-  )
-
 data[["v_601"]] <- haven::labelled(
-  data[["v_601"]],
+  ifelse(data$v_208 %in% c(2, 3, 4), 1, 0),
   labels = c("Enfant(s)" = 1, "Pas d'enfant(s)" = 0),
   label = "Enfant(s)"
 )
@@ -109,14 +90,11 @@ data[["v_602"]] <- haven::labelled(
   label = "À quel point est-il important pour vous d'avoir une place de stationnement privée ?"
 )
 
-# data <- data |>
-#  dplyr::mutate(
-#    v_603 = ifelse(
-#      v_6 %in% c(1,2),
-#    )
-#  )
+```
 
-
+## Unlabeled variables
+This code block adds label to unlabeled variables.
+```{r}
 logement_list = c("v_68", "v_69", "v_70", "v_71", "v_271", "v_242", "v_72", "v_73", "v_272", "v_273", "v_274", "v_275", "v_276")
 for (name in logement_list) {
   data[[name]] <- haven::labelled(
@@ -136,7 +114,6 @@ for (i in 328:334) {
   )
 }
 ```
-
 
 ## Save regrouped data
 This code block saves this new regrouped dataset to a new file in the processed data folder.
