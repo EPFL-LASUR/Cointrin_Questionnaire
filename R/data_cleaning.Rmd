@@ -1,4 +1,5 @@
 # Data Cleaning Cointrin Questionnaire
+This notebook is used to clean invalid answers from the dataset. I should be ran first in the pipeline.
 
 ## Load Data
 This code block loads every needed data and code. It also creates variables containing the path to some folders that are or will contain data.
