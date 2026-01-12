@@ -1,6 +1,8 @@
 # Regrouping
+This notebook regroups the variable in a more usable way. This notebook should be ran on a cleaned dataset.
 
 ## Load cleaned data
+This code block loads the data, paths and functions used in this notebook.
 ```{r}
 here::i_am("R/data_cleaning.Rmd")
 source(here::here("R/util.R"))
@@ -16,6 +18,7 @@ data <- haven::read_sav(
 ```
 
 ## Regrouping
+This code block regroups answers of some questions. For example, we changed the age groups for v_14.
 ```{r}
 regrouping_dict = list(
   "v_6" = list(
@@ -30,7 +33,7 @@ regrouping_dict = list(
     "Moins de 25 ans" = c(1, 2, 3),
     "26 - 44 ans" = c(4),
     "45- 64 ans" = c(5),
-    "65 ans et pklus" = c(6, 7)
+    "65 ans et plus" = c(6, 7)
   ),
   "v_15" = list(
     "Propriétaire" = c(1),
@@ -47,6 +50,7 @@ data <- regroup_data(data, regrouping_dict)
 ```
 
 ## New variables
+This code block creates new variable in the dataset. For example one of the new questions tells if the user uses their personal car often or not.
 ```{r}
 data["v_600"] = 0
 data <- data |>
@@ -82,6 +86,7 @@ data[["v_601"]] <- haven::labelled(
 ```
 
 ## Regroup special variables
+This code block regroups special variables. Sometimes the question is the title of the page on the questionnaire. We regroup all of the variables on the page that has a question as a title to make their processing easier.
 ```{r}
 data <- data |>
   dplyr::mutate(
@@ -134,6 +139,7 @@ for (i in 328:334) {
 
 
 ## Save regrouped data
+This code block saves this new regrouped dataset to a new file in the processed data folder.
 ```{r}
 if (!dir.exists(processed_data_folder)) {
   dir.create(processed_data_folder, recursive = TRUE)
