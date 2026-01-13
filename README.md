@@ -25,7 +25,11 @@ renv::restore()
 
 ## Data source
 
-We used data directly downloaded from Unipark.
+The initial raw data is downloaded from Unipark. Unipark lets the user download the survey data in sav.
+1. go to [unipark](https://ww3.unipark.de/www/front.php?controller=login&module=survey)
+2. log in
+3. go to the Cointrin Questionnaire page
+4. download the survey data in sav format
 
 ## Usage
 
