@@ -366,8 +366,8 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
 #'
 #' @return Plot (ggplot2 object with sf geometries)
 #'
-plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, location_var = "v_6", percent = FALSE) {
-  answer_filter = NULL
+plot_on_map <- function(data, var, outFileName = "", remove_na = TRUE,
+                        location_var = "v_6", percent = FALSE) {
   if (!var %in% names(data)) {
     stop(paste0(var, " is not a variable in the dataset provided."))
   }
@@ -379,7 +379,7 @@ plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, loca
   # Read shapefile
   neigh_map <- sf::st_read("../data/raw/GEO_GIREC.shp", quiet = TRUE)
 
-  # Filter to selected sectors
+  # Keep only the five sectors
   selected_sectors <- c(
     "Cointrin - Les Sapins", "Cointrin - Les Ailes",
     "Grand-Saconnex - Marais", "Vernier - Cointrin", "Le Jonc"
@@ -389,19 +389,18 @@ plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, loca
     dplyr::filter(NOM %in% selected_sectors) |>
     dplyr::mutate(
       sector = dplyr::recode(NOM,
-        "Cointrin - Les Sapins"      = "Sapins",
-        "Cointrin - Les Ailes"       = "Ailes",
-        "Grand-Saconnex - Marais"    = "Marais",
-        "Vernier - Cointrin"         = "VernierCointrin",
-        "Le Jonc"                    = "Jonc"
+        "Cointrin - Les Sapins"   = "Sapins",
+        "Cointrin - Les Ailes"    = "Ailes",
+        "Grand-Saconnex - Marais" = "Marais",
+        "Vernier - Cointrin"      = "VernierCointrin",
+        "Le Jonc"                 = "Jonc"
       ),
       v_6_code = dplyr::case_when(
         sector == "Sapins" ~ 1,
         sector == "Ailes" ~ 2,
         sector == "Marais" ~ 3,
         sector == "Jonc" ~ 4,
-        sector == "VernierCointrin" ~ 5,
-        TRUE ~ NA_real_
+        sector == "VernierCointrin" ~ 5
       )
     )
 
@@ -410,20 +409,23 @@ plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, loca
 
   if (remove_na) {
     plot_data <- plot_data |>
-      dplyr::filter(!is.na(.data[[var]]), !is.na(.data[[location_var]]))
+      dplyr::filter(
+        !is.na(.data[[var]]),
+        !is.na(.data[[location_var]])
+      )
   }
 
-  # Aggregate data by v_6 code
+  # Aggregate: ONE row per sector (this prevents scrambled maps)
   summary_data <- plot_data |>
-    dplyr::group_by(v_6_code = as.numeric(.data[[location_var]]), .data[[var]]) |>
+    dplyr::group_by(v_6_code = as.numeric(.data[[location_var]])) |>
     dplyr::summarise(total_count = dplyr::n(), .groups = "drop")
 
-  # Calculate percentage if requested
+  # Convert to percentages if requested
   if (percent) {
-    total_responses <- sum(summary_data$total_count)
+    total_responses <- sum(summary_data$total_count, na.rm = TRUE)
     summary_data <- summary_data |>
       dplyr::mutate(
-        percentage = (total_count / total_responses) * 100,
+        percentage = 100 * total_count / total_responses,
         display_value = round(percentage, 0)
       )
   } else {
@@ -431,85 +433,60 @@ plot_on_map <- function(data, var, ..., outFileName = "", remove_na = TRUE, loca
       dplyr::mutate(display_value = total_count)
   }
 
-  # Join with map data
+  # Join to map
   map_data <- neigh_map_5 |>
-    dplyr::left_join(summary_data, by = "v_6_code")
+    dplyr::left_join(summary_data, by = "v_6_code") |>
+    dplyr::mutate(
+      total_count   = dplyr::coalesce(total_count, 0),
+      display_value = dplyr::coalesce(display_value, 0)
+    )
 
-  # Replace NA values with 0
   if (percent) {
     map_data <- map_data |>
       dplyr::mutate(
-        total_count = ifelse(is.na(total_count), 0, total_count),
-        percentage = ifelse(is.na(percentage), 0, percentage),
-        display_value = ifelse(is.na(display_value), 0, display_value)
-      )
-  } else {
-    map_data <- map_data |>
-      dplyr::mutate(
-        total_count = ifelse(is.na(total_count), 0, total_count),
-        display_value = ifelse(is.na(display_value), 0, display_value)
+        percentage = dplyr::coalesce(percentage, 0)
       )
   }
 
-  # Create plot with labels
-  # Get the answer label for subtitle if filtering
-  subtitle_text <- if (!is.null(answer_filter)) {
-    answer_label <- names(attr(data[[var]], "labels"))[attr(data[[var]], "labels") == answer_filter]
-    if (length(answer_label) > 0) {
-      paste("Variable:", attr(data[[var]], "label"), "| Answer:", answer_label)
-    } else {
-      paste("Variable:", var, "| Answer code:", answer_filter)
-    }
-  } else {
-    paste("Variable:", var)
-  }
 
-  # Determine fill variable and labels
+  # Plot
   fill_var <- if (percent) "percentage" else "total_count"
   legend_name <- if (percent) "Percentage (%)" else "Count"
 
   p <- ggplot2::ggplot(map_data) +
-    ggplot2::geom_sf(ggplot2::aes(fill = .data[[fill_var]]), color = "black", linewidth = 0.8) +
-    ggplot2::geom_sf_text(ggplot2::aes(label = display_value), color = "white", fontface = "bold", label.size = NA, ..., size = 100) +
-    ggplot2::scale_size(range = c(10, 12)) +
+    ggplot2::geom_sf(ggplot2::aes(fill = .data[[fill_var]]),
+      color = "black", linewidth = 0.8
+    ) +
+    ggplot2::geom_sf_text(ggplot2::aes(label = display_value),
+      color = "white", fontface = "bold", size = 5
+    ) +
     ggplot2::scale_fill_viridis_c(
       name = legend_name,
       na.value = "grey90",
-      begin = 0.1,
-      end = 0.9,
-      direction = -1
+      begin = 0.1, end = 0.9, direction = -1
     ) +
     ggplot2::labs(
-      title = paste("Distribution of Responses by Sector"),
-      subtitle = subtitle_text
+      title = "Distribution of Responses by Sector",
+      subtitle = paste("Variable:", var)
     ) +
     ggplot2::theme_minimal() +
     ggplot2::theme(
-      panel.background = ggplot2::element_blank(),
       panel.grid = ggplot2::element_blank(),
       axis.text = ggplot2::element_blank(),
       axis.ticks = ggplot2::element_blank(),
-      axis.title.x = ggplot2::element_blank(),
-      axis.title.y = ggplot2::element_blank(),
+      axis.title = ggplot2::element_blank(),
       plot.title = ggplot2::element_text(hjust = 0.5, size = 14, face = "bold"),
       plot.subtitle = ggplot2::element_text(hjust = 0.5, size = 12)
-    ) +
-    ggplot2::facet_wrap(
-      ggplot2::vars(
-        v_15
-      )
     )
 
   # Save plot
   if (outFileName == "") {
-    if (!is.null(answer_filter)) {
-      outFileName <- paste0(var, "_", "_map.png")
-    } else {
-      outFileName <- paste0(var, "_map.png")
-    }
+    outFileName <- paste0(var, "_map.png")
   }
 
-  ggplot2::ggsave(file.path(processed_data_folder, outFileName), plot = p, width = 10, height = 8)
+  ggplot2::ggsave(file.path(map_plot_folder, outFileName),
+    plot = p, width = 10, height = 8
+  )
 
   return(p)
 }
