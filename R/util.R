@@ -205,7 +205,7 @@ calculate_same_answers <- function(data, id1, id2) {
 #' @param remove_na bool, flag to remove NA from plot
 #' @param percent bool, flag to choose data representation on plot (true: percents, false: count)
 #'
-#' @inheritParms rlang::args_dot_used
+#' @inheritParms rlang::args_dot_not_used
 #'
 #' @return Plot
 #'
@@ -263,7 +263,7 @@ create_bar_plot <- function(data, variableName, ..., outFileName = "", check_lab
 #' @param remove_na bool, flag to remove NA from plot
 #' @param percent bool, flag to choose data representation on plot (true: percents, false: count)
 #'
-#' @inheritParms rlang::args_dot_used
+#' @inheritParms rlang::args_dot_not_used
 #'
 #' @return Plot
 #'
@@ -362,7 +362,7 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
 #' @param location_var String, variable name containing location codes (v_6). Default: "v_6"
 #' @param percent bool, flag to display percentages instead of counts. Default: FALSE
 #'
-#' @inheritParams rlang::args_dot_used
+#' @inheritParams rlang::args_dot_not_used
 #'
 #' @return Plot (ggplot2 object with sf geometries)
 #'
