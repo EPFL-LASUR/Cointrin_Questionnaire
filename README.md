@@ -23,7 +23,7 @@ First, clone the repository. Then, open the `Cointrin_Questionnaire.Rproj` file 
 renv::restore()
 ```
 
-## Data sourcesdfsd
+## Data sources
 
 
 The initial raw data is downloaded from Unipark. Unipark lets the user download the survey data in sav.
