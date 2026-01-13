@@ -4,7 +4,7 @@ This notebook is used to clean invalid answers from the dataset. It should be ra
 ## Load Data
 This code block loads every needed data and code. It also creates variables containing the path to some folders that are or will contain data.
 ```{r}
-here::i_am(file.path("R", "data_cleaning.Rmd"))
+here::i_am(file.path("notebook", "data_cleaning.Rmd"))
 source(here::here(file.path("R", "util.R")))
 
 filename <- "data_project_1074950_2025_12_05.sav" # Change the name if needed

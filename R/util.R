@@ -1,3 +1,8 @@
+plot_folder <- file.path("..", "data", "plots")
+bar_plot_folder = file.path(plot_folder, "barplot")
+cross_plot_folder = file.path(plot_folder, "cross")
+map_plot_folder = file.path(plot_folder, "maps")
+
 #' Regroup a variable into fewer categories
 #'
 #' Creates a new regrouped variable by combining multiple values into new categories.
@@ -84,6 +89,9 @@ regroup_data <- function(data, dict) {
     data <- regroup_variable(data, name, dict[[name]])
   }
   return(data)
+}
+
+
 #' Extract Labels from Labelled Data
 #'
 #' Extracts variable labels and value labels from a data frame containing
@@ -184,10 +192,7 @@ calculate_same_answers <- function(data, id1, id2) {
   if (total == 0) return(0)
   ratio <- matches / total
   return(ratio)
-processed_data_folder <- "../data/processed"
-bar_plot_folder = file.path(processed_data_folder, "barplot")
-cross_plot_folder = file.path(processed_data_folder, "cross")
-
+}
 
 #' Creates a bar plot for a specified variable and saves it
 #'
@@ -342,6 +347,7 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
     stop("At least one variable is not in provided data.")
   }
 }
+
 
 #' Creates a map visualization showing response distribution across geographic sectors
 #'

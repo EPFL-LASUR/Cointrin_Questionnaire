@@ -4,7 +4,7 @@ This notebook regroups the variable in a more usable way. This notebook should b
 ## Load cleaned data
 This code block loads the data, paths and functions used in this notebook.
 ```{r}
-here::i_am(file.path("R", "data_cleaning.Rmd"))
+here::i_am(file.path("notebook", "data_cleaning.Rmd"))
 source(here::here(file.path("R", "util.R")))
 
 processed_data_folder <- file.path("..", "data", "processed")

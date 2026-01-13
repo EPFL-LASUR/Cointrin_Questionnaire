@@ -4,10 +4,10 @@ This notebook is used to generate plots about a dataset.
 ## Load data
 This code block loads all the data that we need to create plots. It also imports the functions to create the graphs.
 ```{r}
-here::i_am("R/plots.Rmd")
-source(here::here("R/util.R"))
-processed_data_folder <- "../data/processed"
-raw_data_folder <- "../data/raw"
+here::i_am(file.path("..", "R", "plots.Rmd"))
+source(here::here(file.path("R", "util.R")))
+processed_data_folder <- file.path("..", "data", "processed")
+raw_data_folder <- file.path("..", "data", "raw")
 data <- haven::read_sav(
   file.path(
     processed_data_folder, "regrouped_data.sav"
