@@ -4,7 +4,7 @@ This notebook is used to generate plots about a dataset.
 ## Load data
 This code block loads all the data that we need to create plots. It also imports the functions to create the graphs.
 ```{r}
-here::i_am(file.path("..", "R", "plots.Rmd"))
+here::i_am(file.path("notebook", "plots.Rmd"))
 source(here::here(file.path("R", "util.R")))
 processed_data_folder <- file.path("..", "data", "processed")
 raw_data_folder <- file.path("..", "data", "raw")
@@ -13,9 +13,6 @@ data <- haven::read_sav(
     processed_data_folder, "regrouped_data.sav"
   )
 )
-
-bar_plot_folder = file.path(processed_data_folder, "barplot")
-cross_plot_folder = file.path(processed_data_folder, "cross")
 
 excludedVars = c("lfdn", "timestamp", "duration", "lastpage", "browser", "ats", "cleaned", "date_of_first_mail", "date_of_last_access", "datetime", "device_type", "external_lfdn", "flash", "javascript", "language", "output_mode", "page_history", "participant_brand") # more to come
 ```

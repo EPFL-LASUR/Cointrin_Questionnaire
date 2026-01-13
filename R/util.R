@@ -1,7 +1,7 @@
 plot_folder <- file.path("..", "data", "plots")
-bar_plot_folder = file.path(plot_folder, "barplot")
-cross_plot_folder = file.path(plot_folder, "cross")
-map_plot_folder = file.path(plot_folder, "maps")
+bar_plot_folder <- file.path(plot_folder, "barplot")
+cross_plot_folder <- file.path(plot_folder, "cross")
+map_plot_folder <- file.path(plot_folder, "maps")
 
 #' Regroup a variable into fewer categories
 #'
@@ -210,6 +210,10 @@ calculate_same_answers <- function(data, id1, id2) {
 #' @return Plot
 #'
 create_bar_plot <- function(data, variableName, ..., outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = FALSE) {
+  if (!dir.exists(bar_plot_folder)) {
+    dir.create(bar_plot_folder, recursive = TRUE)
+  }
+
   if (variableName %in% names(data)) {
     plot_data <- data
 
@@ -268,6 +272,10 @@ create_bar_plot <- function(data, variableName, ..., outFileName = "", check_lab
 #' @return Plot
 #'
 create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = FALSE) {
+  if (!dir.exists(cross_plot_folder)) {
+    dir.create(cross_plot_folder, recursive = TRUE)
+  }
+
   if (var1 %in% names(data) && var2 %in% names(data)) {
     len_labels_var1 <- length(attr(data[[var1]], "labels"))
     len_labels_var2 <- length(attr(data[[var2]], "labels"))
