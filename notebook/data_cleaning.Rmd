@@ -12,6 +12,10 @@ filename <- "data_project_1074950_2025_12_05.sav" # Change the name if needed
 processed_data_folder <- file.path("..", "data", "processed")
 raw_data_folder <- file.path("..", "data", "raw")
 
+if (!dir.exists(processed_data_folder)) {
+  dir.create(processed_data_folder, recursive = TRUE)
+}
+
 raw_data <- haven::read_sav(
   file.path(
     raw_data_folder, filename
