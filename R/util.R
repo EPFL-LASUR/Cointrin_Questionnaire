@@ -1,8 +1,3 @@
-plot_folder <- file.path("..", "data", "plots")
-bar_plot_folder <- file.path(plot_folder, "barplot")
-cross_plot_folder <- file.path(plot_folder, "cross")
-map_plot_folder <- file.path(plot_folder, "maps")
-
 #' Regroup a variable into fewer categories
 #'
 #' Creates a new regrouped variable by combining multiple values into new categories.
@@ -209,7 +204,7 @@ calculate_same_answers <- function(data, id1, id2) {
 #'
 #' @return Plot
 #'
-create_bar_plot <- function(data, variableName, ..., outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = FALSE) {
+create_bar_plot <- function(data, variableName, ..., bar_plot_folder = file.path("..", "data", "plots", "barplot"), outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = FALSE) {
   if (!dir.exists(bar_plot_folder)) {
     dir.create(bar_plot_folder, recursive = TRUE)
   }
@@ -271,7 +266,7 @@ create_bar_plot <- function(data, variableName, ..., outFileName = "", check_lab
 #'
 #' @return Plot
 #'
-create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = FALSE) {
+create_heat_map <- function(data, var1, var2, ..., cross_plot_folder = file.path("..", "data", "plots", "cross"), outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = FALSE) {
   if (!dir.exists(cross_plot_folder)) {
     dir.create(cross_plot_folder, recursive = TRUE)
   }
@@ -374,7 +369,8 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
 #'
 #' @return Plot (ggplot2 object with sf geometries)
 #'
-plot_on_map <- function(data, var, outFileName = "", remove_na = TRUE,
+plot_on_map <- function(data, var, ..., map_plot_folder = file.path("..", "data", "plots", "maps"),
+                        outFileName = "", remove_na = TRUE,
                         location_var = "v_6", percent = FALSE) {
   if (!dir.exists(map_plot_folder)) {
     dir.create(map_plot_folder, recursive = TRUE)
