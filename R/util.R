@@ -376,6 +376,10 @@ create_heat_map <- function(data, var1, var2, ..., outFileName = "", check_label
 #'
 plot_on_map <- function(data, var, outFileName = "", remove_na = TRUE,
                         location_var = "v_6", percent = FALSE) {
+  if (!dir.exists(map_plot_folder)) {
+    dir.create(map_plot_folder, recursive = TRUE)
+  }
+
   if (!var %in% names(data)) {
     stop(paste0(var, " is not a variable in the dataset provided."))
   }
