@@ -204,7 +204,7 @@ calculate_same_answers <- function(data, id1, id2) {
 #'
 #' @return Plot
 #'
-create_bar_plot <- function(data, variableName, ..., bar_plot_folder = file.path("..", "data", "plots", "barplot"), outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = FALSE) {
+create_bar_plot <- function(data, variableName, ..., bar_plot_folder = file.path("..", "data", "plots", "barplot"), outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = TRUE) {
   if (!dir.exists(bar_plot_folder)) {
     dir.create(bar_plot_folder, recursive = TRUE)
   }
@@ -266,7 +266,7 @@ create_bar_plot <- function(data, variableName, ..., bar_plot_folder = file.path
 #'
 #' @return Plot
 #'
-create_heat_map <- function(data, var1, var2, ..., cross_plot_folder = file.path("..", "data", "plots", "cross"), outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = FALSE) {
+create_heat_map <- function(data, var1, var2, ..., cross_plot_folder = file.path("..", "data", "plots", "cross"), outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = TRUE) {
   if (!dir.exists(cross_plot_folder)) {
     dir.create(cross_plot_folder, recursive = TRUE)
   }
