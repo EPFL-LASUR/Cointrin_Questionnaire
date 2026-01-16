@@ -5,7 +5,7 @@ This notebook is used to generate plots about a dataset.
 This code block loads all the data that we need to create plots. It also imports the functions to create the graphs.
 ```{r}
 here::i_am(file.path("notebook", "plots.Rmd"))
-source(here::here(file.path("R", "util.R")))
+source(here::here(file.path("R", "plots.R")))
 processed_data_folder <- file.path("..", "data", "processed")
 raw_data_folder <- file.path("..", "data", "raw")
 data <- haven::read_sav(
@@ -48,7 +48,7 @@ plot_on_map(data, "v_15")
 ### Create one Heatmap
 This code block generates a heat map between variables of your choice. the first argument is the dataset to use, second and third argument are the names of the variables to use in the heat map.
 ```{r}
-create_heat_map(data, "v_6_r", "v_14_r")
+create_heat_map(data, "v_6_r", "v_14_r", percent = TRUE)
 ```
 
 ## Create all Heatmaps

@@ -5,7 +5,7 @@ This notebook regroups the variable in a more usable way. This notebook should b
 This code block loads the data, paths and functions used in this notebook.
 ```{r}
 here::i_am(file.path("notebook", "data_cleaning.Rmd"))
-source(here::here(file.path("R", "util.R")))
+source(here::here(file.path("R", "regrouping.R")))
 
 processed_data_folder <- file.path("..", "data", "processed")
 raw_data_folder <- file.path("..", "data", "raw")
@@ -52,9 +52,8 @@ data <- regroup_data(data, regrouping_dict)
 ## New variables
 This code block creates new variable in the dataset. For example one of the new questions tells if the user uses their personal car often or not.
 ```{r}
-
 data[["v_600"]] <- haven::labelled(
-  ifelse(data$v_328 %in% c(1,2), 1, 0),
+  ifelse(data$v_328 %in% c(1, 2), 1, 0),
   labels = c("Utilisation fréquente" = 1, "Utilisation non fréquente" = 0),
   label = "Utilisation de voiture personelle"
 )
@@ -89,7 +88,6 @@ data[["v_602"]] <- haven::labelled(
   labels = c("Je n'ai pas de places de stationnement privée" = 0, "Pas important" = 1, "Plutôt pas important" = 2, "Plutôt important" = 3, "Très important" = 4, "Pas de réponce" = -99),
   label = "À quel point est-il important pour vous d'avoir une place de stationnement privée ?"
 )
-
 ```
 
 ## Unlabeled variables
