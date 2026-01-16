@@ -222,7 +222,7 @@ plot_on_map <- function(data, var, ..., map_plot_folder = file.path("..", "data"
   }
 
   # Read shapefile
-  neigh_map <- sf::st_read("../data/raw/GEO_GIREC.shp", quiet = TRUE)
+  neigh_map <- sf::st_read(file.path("..", "data", "raw", "GEO_GIREC-SHP", "GEO_GIREC.shp"), quiet = TRUE)
 
   # Keep only the five sectors
   selected_sectors <- c(
