@@ -7,13 +7,13 @@
 #' @param outFile String, name of the output file name. default: [var name]_barplot.jpg
 #' @param check_labels bool, flag to check the ammount of different possible answers to exclude open text answer
 #' @param remove_na bool, flag to remove NA from plot
-#' @param percent bool, flag to choose data representation on plot (true: percents, false: count)
+#' @param percent bool, flag to choose data representation on plot. default: true (true: percents, false: count)
 #'
 #' @inheritParms rlang::args_dot_not_used
 #'
 #' @return Plot
 #'
-create_bar_plot <- function(data, variableName, ..., bar_plot_folder = file.path("..", "data", "plots", "barplot"), outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = FALSE) {
+create_bar_plot <- function(data, variableName, ..., bar_plot_folder = file.path("..", "data", "plots", "barplot"), outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = TRUE) {
   if (!dir.exists(bar_plot_folder)) {
     dir.create(bar_plot_folder, recursive = TRUE)
   }
@@ -69,13 +69,13 @@ create_bar_plot <- function(data, variableName, ..., bar_plot_folder = file.path
 #' @param outFile String, name of the output file name. default: [var name]_barplot.jpg
 #' @param check_labels bool, flag to check the ammount of different possible answers to exclude open text answer
 #' @param remove_na bool, flag to remove NA from plot
-#' @param percent bool, flag to choose data representation on plot (true: percents, false: count)
+#' @param percent bool, flag to choose data representation on plot. default: true (true: percents, false: count)
 #'
 #' @inheritParms rlang::args_dot_not_used
 #'
 #' @return Plot
 #'
-create_heat_map <- function(data, var1, var2, ..., cross_plot_folder = file.path("..", "data", "plots", "cross"), outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = FALSE) {
+create_heat_map <- function(data, var1, var2, ..., cross_plot_folder = file.path("..", "data", "plots", "cross"), outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = TRUE) {
   if (!dir.exists(cross_plot_folder)) {
     dir.create(cross_plot_folder, recursive = TRUE)
   }
@@ -172,7 +172,7 @@ create_heat_map <- function(data, var1, var2, ..., cross_plot_folder = file.path
 #' @param outFileName String, name of the output file. Default: [var]_map.png
 #' @param remove_na bool, flag to remove NA values from plot. Default: TRUE
 #' @param location_var String, variable name containing location codes (v_6). Default: "v_6"
-#' @param percent bool, flag to display percentages instead of counts. Default: FALSE
+#' @param percent bool, flag to display percentages instead of counts. Default: TRUE
 #'
 #' @inheritParams rlang::args_dot_not_used
 #'
@@ -180,7 +180,7 @@ create_heat_map <- function(data, var1, var2, ..., cross_plot_folder = file.path
 #'
 plot_on_map <- function(data, var, ..., map_plot_folder = file.path("..", "data", "plots", "maps"),
                         outFileName = "", remove_na = TRUE,
-                        location_var = "v_6", percent = FALSE) {
+                        location_var = "v_6", percent = TRUE) {
   if (!dir.exists(map_plot_folder)) {
     dir.create(map_plot_folder, recursive = TRUE)
   }
