@@ -41,4 +41,3 @@ For an optimal usage, the notebooks should be run in that order : <br><br>
 3. [plots.Rmd](notebook/plots.Rmd). This notebook creates plots from given data.
 
 You might have to change input file names in the notebooks. This file name is always in the first code block of every notebook. The file name should the exact name of the file that you want to use.
-
