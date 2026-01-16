@@ -8,12 +8,13 @@
 #' @param check_labels bool, flag to check the ammount of different possible answers to exclude open text answer
 #' @param remove_na bool, flag to remove NA from plot
 #' @param percent bool, flag to choose data representation on plot. default: true (true: percents, false: count)
+#' @param show_values bool, flag to show the values on the plot. default true
 #'
 #' @inheritParms rlang::args_dot_not_used
 #'
 #' @return Plot
 #'
-create_bar_plot <- function(data, variableName, ..., bar_plot_folder = file.path("..", "data", "plots", "barplot"), outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = TRUE) {
+create_bar_plot <- function(data, variableName, ..., bar_plot_folder = file.path("..", "data", "plots", "barplot"), outFileName = "", check_labels = FALSE, remove_na = TRUE, percent = TRUE, show_values = TRUE) {
   if (!dir.exists(bar_plot_folder)) {
     dir.create(bar_plot_folder, recursive = TRUE)
   }
@@ -36,17 +37,44 @@ create_bar_plot <- function(data, variableName, ..., bar_plot_folder = file.path
     }
 
     p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data[[variableName]])) +
-      ggplot2::geom_bar(fill = "#69b3a2", ggplot2::aes(y = if (percent) ggplot2::after_stat(count / sum(count) * 100) else ggplot2::after_stat(count))) +
+      ggplot2::geom_bar(
+        fill = "#69b3a2",
+        ggplot2::aes(
+          y = if (percent)
+            ggplot2::after_stat(count / sum(count) * 100)
+          else
+            ggplot2::after_stat(count)
+        )
+      ) +
       ggplot2::labs(
         title = variableName,
         y = if (percent) "Percentage (%)" else "Count"
       ) +
-      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 70, hjust = 1)) +
-      ggplot2::theme_minimal() +
       ggplot2::theme(
+        axis.text.x = ggplot2::element_text(angle = 70, hjust = 1),
         panel.grid.major = ggplot2::element_blank(),
         panel.grid.minor = ggplot2::element_blank()
-      )
+      ) +
+      ggplot2::theme_minimal()
+
+    if (show_values) {
+      p <- p +
+        ggplot2::geom_text(
+          ggplot2::aes(
+            label = if (percent)
+              scales::percent(ggplot2::after_stat(count / sum(count)), accuracy = 0.1)
+            else
+              ggplot2::after_stat(count),
+            y = if (percent)
+              ggplot2::after_stat(count / sum(count) * 100)
+            else
+              ggplot2::after_stat(count)
+          ),
+          stat = "count",
+          vjust = -0.3
+        )
+    }
+
 
     if (outFileName == "") {
       outFileName <- paste0(variableName, "_barplot.png")
