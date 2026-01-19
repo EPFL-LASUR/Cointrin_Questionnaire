@@ -17,6 +17,11 @@ data <- haven::read_sav(
 )
 ```
 
+```{r}
+test <- regroup_special(data, list(c("v_42", "v_43", "v_44", "v_45", "v_46", "v_47", "v_48", "v_49", "v_50", "v_51", "v_52", "v_53", "v_54", "v_278", "v_277")), 700, c("ceci est le titre"))
+```
+
+
 ## Regrouping
 This code block regroups answers of some questions. For example, we changed the age groups for v_14.
 ```{r}

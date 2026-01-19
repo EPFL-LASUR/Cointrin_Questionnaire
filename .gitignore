@@ -51,3 +51,4 @@ rsconnect/
 # Data files
 data/processed/*
 data/plots/*
+data/raw/*.sav
