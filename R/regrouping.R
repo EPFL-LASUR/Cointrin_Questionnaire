@@ -167,21 +167,37 @@ regroup_special_var <- function(data, variables, new_var_name, new_var_label) {
 #' @param data A data frame
 #' @param variables_list A list of character vectors, each containing variable names to combine
 #' @param starting_new_var_num Starting number for naming new variables (v_X format)
+#' @param new_var_labels Character vector of labels for each new variable
 #'
 #' @return The data frame with all combined variables added
 regroup_special <- function(data, variables_list, starting_new_var_num, new_var_labels) {
   cnt <- 0
   for (vars in variables_list) {
     new_var_name <- paste0("v_", starting_new_var_num + cnt)
+
+    # Identify and handle "Autre" variables
+    vars_to_keep <- c()
     for (autre in vars) {
-      if (attr(data[[autre]], "label") == "Autre" && length(attr(data[[autre]], "labels")) == 0) {
+      var_label <- attr(data[[autre]], "label")
+      var_labels <- attr(data[[autre]], "labels")
+
+      # Check if label starts with "Autre" and has no value labels
+      if (!is.null(var_label) && grepl("^Autre", var_label) && (is.null(var_labels) || length(var_labels) == 0)) {
         autre_name <- paste0(new_var_name, "_autre")
         data[[autre_name]] <- data[[autre]]
-
-        vars <- vars[vars != autre]
+        attr(data[[autre_name]], "label") <- var_label
+      } else {
+        vars_to_keep <- c(vars_to_keep, autre)
       }
     }
-    data <- regroup_special_var(data, vars, new_var_name, new_var_labels[cnt + 1])
+
+    # Only process if there are variables left after removing "Autre"
+    if (length(vars_to_keep) > 0) {
+      data <- regroup_special_var(data, vars_to_keep, new_var_name, new_var_labels[cnt + 1])
+    } else {
+      warning(paste0("No variables to combine for ", new_var_name, " after removing 'Autre' variables"))
+    }
+
     cnt <- cnt + 1
   }
   return(data)
