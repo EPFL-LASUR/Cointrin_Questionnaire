@@ -90,15 +90,7 @@ data[["v_602"]] <- haven::labelled(
   label = "À quel point est-il important pour vous d'avoir une place de stationnement privée ?"
 )
 
-titres <- c(
-  "Pourquoi avez-vous choisi d'habiter dans ce quartier ?",
-  "Votre logement dispose-t-il d'un jardin ou d'un balcon?",
-  "Quelles pourraient être les raisons de quitter le quartier ?",
-  "Utilisez-vous votre logement (y compris de ses éventuelles annexes, garages, etc.) pour d’autres activités ?",
-  "Votre jardin accueille-t-il un ou plusieurs des éléments suivants ?",
-  "Pour quelles activités utilisez vous votre jardin ?",
-  "Êtes-vous membre d’une association ou d’un groupe lié à votre quartier?"
-)
+
 groups <- list(
   c("v_42", "v_43", "v_44", "v_45", "v_46", "v_47", "v_48", "v_49", "v_50", "v_51", "v_52", "v_53", "v_54", "v_278", "v_277"),
   c("v_456", "v_457", "v_458", "v_455"),
@@ -106,7 +98,18 @@ groups <- list(
   c("v_317", "v_318", "v_319", "v_320", "v_321", "v_322", "v_323", "v_324", "v_325", "v_326", "v_327", "v_439", "v_440"),
   c("v_298", "v_299", "v_300", "v_301", "v_302", "v_303", "v_304", "v_305", "v_306"),
   c("v_308", "v_309", "v_310", "v_311", "v_312", "v_313", "v_314"),
-  c("v_179", "v_180", "v_181", "v_184", "v_185")
+  c("v_179", "v_180", "v_181", "v_184", "v_185"),
+  c("v_70", "v_71", "v_72", "v_73", "v_242", "v_271", "v_272", "v_273", "v_274", "v_275", "v_276"),
+  c("v_328", "v_329", "v_330", "v_331", "v_332", "v_333", "v_334"),
+  c("v_427", "v_428", "v_429", "v_430", "v_431"),
+  c("v_339", "v_340", "v_341", "v_343"),
+  c("v_345", "v_346", "v_347", "v_348", "v_350"),
+  c("v_352", "v_353"),
+  c("v_257", "v_258", "v_259"),
+  c("v_362", "v_363"),
+  c("v_367", "v_368", "v_369", "v_370", "v_371", "v_372"),
+  c("v_131", "v_132", "v_133", "v_135"),
+  c("v_196", "v_197", "v_198", "v_199", "v_200", "v_201", "v_202", "v_203", "v_264", "v_265", "v_266", "v_267", "v_268", "v_269", "v_270")
 )
 
 data <- regroup_special(data, groups)
