@@ -173,6 +173,14 @@ regroup_special <- function(data, variables_list, starting_new_var_num, new_var_
   cnt <- 0
   for (vars in variables_list) {
     new_var_name <- paste0("v_", starting_new_var_num + cnt)
+    for (autre in vars) {
+      if (attr(data[[autre]], "label") == "Autre" && length(attr(data[[autre]], "labels")) == 0) {
+        autre_name <- paste0(new_var_name, "_autre")
+        data[[autre_name]] <- data[[autre]]
+
+        vars <- vars[vars != autre]
+      }
+    }
     data <- regroup_special_var(data, vars, new_var_name, new_var_labels[cnt + 1])
     cnt <- cnt + 1
   }
