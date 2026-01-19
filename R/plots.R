@@ -1,3 +1,5 @@
+source(here::here("R", "util.R"))
+
 #' Creates a bar plot for a specified variable and saves it
 #'
 #' \code{create_bar_plot} Creates a bar plot for a specified variable and saves it
@@ -329,6 +331,170 @@ plot_on_map <- function(data, var, ..., map_plot_folder = file.path("..", "data"
 
   ggplot2::ggsave(file.path(map_plot_folder, outFileName),
     plot = p, width = 10, height = 8
+  )
+
+  return(p)
+}
+
+#' Creates a stacked bar plot for multiple variables and saves it
+#'
+#' \code{create_stacked_bar_plot} Creates a stacked bar plot comparing multiple
+#' binary/categorical variables with consistent response categories (e.g., Yes/No,
+#' Quoted/Not Quoted). Each variable becomes a separate bar, with response
+#' categories stacked within each bar.
+#'
+#' @param data Data frame, data frame containing data to plot
+#' @param variables Character vector, variable names to compare
+#' @param title String, title for the plot. Default: "Comparison of Variables"
+#' @param outFileName String, name of the output file. Default: "stacked_barplot.png"
+#' @param stacked_plot_folder String, folder path for saving plots. Default: "../data/plots/stacked"
+#' @param remove_na bool, flag to remove NA from plot. Default: TRUE
+#' @param percent bool, flag to display percentages instead of counts. Default: TRUE
+#' @param show_values bool, flag to show values on the plot. Default: TRUE
+#' @param custom_labels Character vector, optional custom labels for variables.
+#'   Default: NULL (uses variable names)
+#'
+#' @inheritParams rlang::args_dot_not_used
+#'
+#' @return Plot (ggplot2 object)
+#'
+create_stacked_barplot <- function(data, variable_name, ...,
+                                   outFileName = "",
+                                   stacked_plot_folder = file.path("..", "data", "plots", "stacked"),
+                                   remove_na = TRUE,
+                                   percent = TRUE,
+                                   show_values = TRUE,
+                                   custom_labels = NULL) {
+  title <- get_special_title(variable_name)
+
+
+  variables <- get_special_variables(data, variable_name)
+
+  if (title == "" || length(variables) == 0) {
+    stop(paste0("variable ", variable_name, " is not present in the dataset or is not a special variable"))
+  }
+
+
+  if (!dir.exists(stacked_plot_folder)) {
+    dir.create(stacked_plot_folder, recursive = TRUE)
+  }
+
+  # Check if all variables exist in data
+  missing_vars <- variables[!variables %in% names(data)]
+  if (length(missing_vars) > 0) {
+    stop(paste0("Variables not found in dataset: ", paste(missing_vars, collapse = ", ")))
+  }
+
+  # Prepare data for plotting
+  plot_data_list <- list()
+
+  for (i in seq_along(variables)) {
+    var <- variables[i]
+    var_label <- if (!is.null(custom_labels) && length(custom_labels) >= i) {
+      custom_labels[i]
+    } else {
+      attr(data[[var]], "label")
+    }
+
+    temp_data <- data |>
+      dplyr::select(dplyr::all_of(var)) |>
+      dplyr::mutate(
+        response = haven::as_factor(.data[[var]]),
+        variable = var_label
+      )
+
+    if (remove_na) {
+      temp_data <- temp_data |>
+        dplyr::filter(!is.na(response))
+    }
+
+    plot_data_list[[i]] <- temp_data |>
+      dplyr::select(variable, response)
+  }
+
+  # Combine all data
+  plot_data <- dplyr::bind_rows(plot_data_list)
+
+  # Calculate counts and percentages
+  summary_data <- plot_data |>
+    dplyr::group_by(variable, response) |>
+    dplyr::summarise(count = dplyr::n(), .groups = "drop") |>
+    dplyr::group_by(variable) |>
+    dplyr::mutate(
+      total = sum(count),
+      percentage = count / total * 100
+    ) |>
+    dplyr::ungroup()
+
+  # Create plot
+  if (percent) {
+    p <- ggplot2::ggplot(
+      summary_data,
+      ggplot2::aes(x = variable, y = percentage, fill = response)
+    ) +
+      ggplot2::geom_bar(stat = "identity", position = "stack") +
+      ggplot2::labs(
+        title = title,
+        x = "",
+        y = "Percentage (%)",
+        fill = "Response"
+      )
+
+    if (show_values) {
+      p <- p +
+        ggplot2::geom_text(
+          ggplot2::aes(label = paste0(round(percentage, 1), "%")),
+          position = ggplot2::position_stack(vjust = 0.5),
+          color = "white",
+          fontface = "bold",
+          size = 3.5
+        )
+    }
+  } else {
+    p <- ggplot2::ggplot(
+      summary_data,
+      ggplot2::aes(x = variable, y = count, fill = response)
+    ) +
+      ggplot2::geom_bar(stat = "identity", position = "stack") +
+      ggplot2::labs(
+        title = title,
+        x = "",
+        y = "Count",
+        fill = "Response"
+      )
+
+    if (show_values) {
+      p <- p +
+        ggplot2::geom_text(
+          ggplot2::aes(label = count),
+          position = ggplot2::position_stack(vjust = 0.5),
+          color = "white",
+          fontface = "bold",
+          size = 3.5
+        )
+    }
+  }
+
+  p <- p +
+    ggplot2::scale_fill_brewer(palette = "Set2") +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+      plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
+      panel.grid.major.x = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank()
+    )
+
+  if (outFileName == "") {
+    outFileName = paste0(variable_name, "_stacked.png")
+  }
+
+  # Save plot
+  ggplot2::ggsave(
+    file.path(stacked_plot_folder, outFileName),
+    plot = p,
+    width = 10,
+    height = 6
   )
 
   return(p)

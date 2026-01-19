@@ -40,3 +40,41 @@ get_labels <- function(
     ))
   }
 }
+
+#' gets recursively all the variable names related to a special variable
+#'
+#' @param data dataset to look for variables
+#' @param name name of the regrouped variable
+#' @param index index of the var to look for
+#'
+#' @return array containing existing variables
+get_special_variables <- function(data, name, ..., index = 1) {
+  var_name <- paste0(name, "_", index)
+  if (var_name %in% names(data)) {
+    return(c(var_name, get_special_variables(data, name, index = index + 1)))
+  } else {
+    return(c())
+  }
+}
+
+get_special_title <- function(name) {
+  titres <- c(
+    "Pourquoi avez-vous choisi d'habiter dans ce quartier ?",
+    "Votre logement dispose-t-il d'un jardin ou d'un balcon?",
+    "Quelles pourraient être les raisons de quitter le quartier ?",
+    "Utilisez-vous votre logement (y compris de ses éventuelles annexes, garages, etc.) pour d’autres activités ?",
+    "Votre jardin accueille-t-il un ou plusieurs des éléments suivants ?",
+    "Pour quelles activités utilisez vous votre jardin ?",
+    "Êtes-vous membre d’une association ou d’un groupe lié à votre quartier?"
+  )
+
+  index <- substr(name, 4, 5)
+  index <- as.numeric(index) + 1
+
+  if (index > length(titres)) {
+    return("")
+  }
+
+
+  return(titres[index])
+}
