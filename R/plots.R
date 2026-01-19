@@ -139,15 +139,13 @@ create_heat_map <- function(data, var1, var2, ..., cross_plot_folder = file.path
 
     if (percent) {
       plot_data <- plot_data |>
+        dplyr::group_by(var1_col) |>
         dplyr::mutate(
           percentage = count / sum(count) * 100,
           label_text = as.character(round(percentage))
-        )
+        ) |>
+        dplyr::ungroup()
       fill_var <- "percentage"
-      label_var <- "label_text"
-    } else {
-      plot_data <- plot_data |> dplyr::mutate(label_text = as.character(count))
-      fill_var <- "count"
       label_var <- "label_text"
     }
 
@@ -335,3 +333,4 @@ plot_on_map <- function(data, var, ..., map_plot_folder = file.path("..", "data"
 
   return(p)
 }
+
