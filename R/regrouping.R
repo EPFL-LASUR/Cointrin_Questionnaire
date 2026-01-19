@@ -156,7 +156,7 @@ regroup_special_var <- function(data, variables, new_var_name, new_var_label) {
   # Add the new list column
   data[[new_var_name]] <- user_responses
   attr(data[[new_var_name]], "label") <- new_var_label
-  attr(data[[new_var_name]], "subquestion_labels") <- subquestion_labels
+  attr(data[[new_var_name]], "labels") <- subquestion_labels
 
   return(data)
 }
