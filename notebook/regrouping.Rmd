@@ -17,10 +17,6 @@ data <- haven::read_sav(
 )
 ```
 
-```{r}
-test <- regroup_special(data, list(c("v_42", "v_43", "v_44", "v_45", "v_46", "v_47", "v_48", "v_49", "v_50", "v_51", "v_52", "v_53", "v_54", "v_278", "v_277")), 700, c("ceci est le titre"))
-```
-
 
 ## Regrouping
 This code block regroups answers of some questions. For example, we changed the age groups for v_14.
@@ -93,6 +89,27 @@ data[["v_602"]] <- haven::labelled(
   labels = c("Je n'ai pas de places de stationnement privée" = 0, "Pas important" = 1, "Plutôt pas important" = 2, "Plutôt important" = 3, "Très important" = 4, "Pas de réponce" = -99),
   label = "À quel point est-il important pour vous d'avoir une place de stationnement privée ?"
 )
+
+titres <- c(
+  "Pourquoi avez-vous choisi d'habiter dans ce quartier ?",
+  "Votre logement dispose-t-il d'un jardin ou d'un balcon?",
+  "Quelles pourraient être les raisons de quitter le quartier ?",
+  "Utilisez-vous votre logement (y compris de ses éventuelles annexes, garages, etc.) pour d’autres activités ?",
+  "Votre jardin accueille-t-il un ou plusieurs des éléments suivants ?",
+  "Pour quelles activités utilisez vous votre jardin ?",
+  "Êtes-vous membre d’une association ou d’un groupe lié à votre quartier?"
+)
+groups <- list(
+  c("v_42", "v_43", "v_44", "v_45", "v_46", "v_47", "v_48", "v_49", "v_50", "v_51", "v_52", "v_53", "v_54", "v_278", "v_277"),
+  c("v_456", "v_457", "v_458", "v_455"),
+  c("v_284", "v_289", "v_285", "v_286", "v_287", "v_288", "v_290"),
+  c("v_317", "v_318", "v_319", "v_320", "v_321", "v_322", "v_323", "v_324", "v_325", "v_326", "v_327", "v_439", "v_440"),
+  c("v_298", "v_299", "v_300", "v_301", "v_302", "v_303", "v_304", "v_305", "v_306"),
+  c("v_308", "v_309", "v_310", "v_311", "v_312", "v_313", "v_314"),
+  c("v_179", "v_180", "v_181", "v_184", "v_185")
+)
+
+data <- regroup_special(data, groups)
 ```
 
 ## Unlabeled variables
