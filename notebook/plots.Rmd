@@ -66,5 +66,8 @@ for (var1 in names(data)) {
 
 
 ```{r}
-create_stacked_barplot(data, "v_701", show_values = FALSE)
+create_stacked_barplot(data, "v_700", show_values = TRUE, percent = FALSE)
+```
+```{r}
+generate_all_stacked_barplots(data)
 ```

@@ -364,6 +364,7 @@ create_stacked_barplot <- function(data, variable_name, ...,
                                    remove_na = TRUE,
                                    percent = TRUE,
                                    show_values = TRUE,
+                                   horizontal = FALSE,
                                    custom_labels = NULL) {
   title <- get_special_title(variable_name)
 
@@ -476,7 +477,11 @@ create_stacked_barplot <- function(data, variable_name, ...,
   }
 
   p <- p +
-    ggplot2::scale_fill_brewer(palette = "Set2") +
+    ggplot2::scale_fill_viridis_d(
+      name = "Response",
+      na.value = "grey90",
+      begin = 0.1, end = 0.9, direction = -1
+    ) +
     ggplot2::theme_minimal() +
     ggplot2::theme(
       axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
@@ -484,6 +489,11 @@ create_stacked_barplot <- function(data, variable_name, ...,
       panel.grid.major.x = ggplot2::element_blank(),
       panel.grid.minor = ggplot2::element_blank()
     )
+
+
+  if (!horizontal) {
+    p <- p + ggplot2::coord_flip()
+  }
 
   if (outFileName == "") {
     outFileName = paste0(variable_name, "_stacked.png")
@@ -498,4 +508,49 @@ create_stacked_barplot <- function(data, variable_name, ...,
   )
 
   return(p)
+}
+
+#' generates all possibe stacked barplots for special variables
+#'
+#' @param data Data frame, data frame containing data to plot
+#' @param stacked_plot_folder String, folder path for saving plots. Default: "../data/plots/stacked"
+#' @param remove_na bool, flag to remove NA from plot. Default: TRUE
+#' @param percent bool, flag to display percentages instead of counts. Default: TRUE
+#' @param show_values bool, flag to show values on the plot. Default: TRUE
+#' @param horizontal bool, flag to flip the axis of the plot. default false
+#'
+#' @return void
+generate_all_stacked_barplots <- function(data, ...,
+                                          stacked_plot_folder = file.path("..", "data", "plots", "stacked"),
+                                          remove_na = TRUE,
+                                          percent = TRUE,
+                                          show_values = TRUE,
+                                          horizontal = FALSE) {
+  start <- 700
+  vname <- paste0("v_", start)
+
+  while (length(get_special_variables(data, vname)) > 0 && get_special_title(vname) != "") {
+    tryCatch(
+      {
+        create_stacked_barplot(
+          data,
+          vname,
+          stacked_plot_folder = stacked_plot_folder,
+          remove_na = remove_na,
+          percent = percent,
+          show_values = show_values,
+          horizontal = horizontal
+        )
+        message(paste("Successfully created plot for", vname))
+      },
+      error = function(e) {
+        message(paste("Skipping", vname, "- Not a special variable or error:", e$message))
+      }
+    )
+
+    start <- start + 1
+    vname <- paste0("v_", start)
+  }
+
+  message(paste("Finished processing. Last variable checked:", paste0("v_", start - 1)))
 }

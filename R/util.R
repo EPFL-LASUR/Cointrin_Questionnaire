@@ -57,6 +57,11 @@ get_special_variables <- function(data, name, ..., index = 1) {
   }
 }
 
+#' gets the question title for a special variable
+#'
+#' @param name variable name
+#'
+#' @return title for the question or empty string if title not found
 get_special_title <- function(name) {
   titres <- c(
     "Pourquoi avez-vous choisi d'habiter dans ce quartier ?",
@@ -65,7 +70,29 @@ get_special_title <- function(name) {
     "Utilisez-vous votre logement (y compris de ses éventuelles annexes, garages, etc.) pour d’autres activités ?",
     "Votre jardin accueille-t-il un ou plusieurs des éléments suivants ?",
     "Pour quelles activités utilisez vous votre jardin ?",
-    "Êtes-vous membre d’une association ou d’un groupe lié à votre quartier?"
+    "Êtes-vous membre d’une association ou d’un groupe lié à votre quartier?",
+    "Pensez à votre logement et évaluez votre satisfaction selon ces critères:",
+    "À quelle fréquence utilisez-vous les moyens de déplacement suivants ?",
+    "Parcs / espaces verts",
+    "Quelles sources de bruit vous dérange ?",
+    "Vous avez répondu ne pas vous sentir en sécurité tout le temps dans votre quartier. Pouvez-vous préciser ce qui vous fait vous sentir en insécurité?",
+    "Avez-vous l’impression que les autorités prennent en compte vos intérêts :",
+    "Comment percevez-vous ces formes d'évolution du quartier",
+    "Comment percevriez-vous ces évolutions du quartier",
+    "A quel point ces sujets vous préoccupent ?",
+    "Avec vos voisins et voisines d'immeuble, à quelle fréquence...",
+    "En raison de votre appartenance à quel groupe ou pour quel motif avez-vous été victime de ces discriminations ?",
+    "À quel point est-il important pour vous d'avoir une place de stationnement privée ?",
+    "Accessibilité et mobilité du quartier :",
+    "Accessibilité et mobilité du quartier :",
+    "Places de jeux pour enfants",
+    "Espaces de loisir pour les adolescents et adolescentes",
+    "École",
+    "Équipements sportifs",
+    "Équipements culturels",
+    "Places publiques",
+    "Qualité des espaces et cadre de vie",
+    "Perception de la densité, mixité sociale et mixité générationnelle du quartier :"
   )
 
   index <- substr(name, 4, 5)
