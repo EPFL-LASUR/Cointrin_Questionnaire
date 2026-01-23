@@ -365,6 +365,7 @@ create_stacked_barplot <- function(data, variable_name, ...,
                                    percent = TRUE,
                                    show_values = TRUE,
                                    horizontal = FALSE,
+                                   wWrap = TRUE,
                                    custom_labels = NULL) {
   title <- get_special_title(variable_name)
 
@@ -493,6 +494,10 @@ create_stacked_barplot <- function(data, variable_name, ...,
 
   if (!horizontal) {
     p <- p + ggplot2::coord_flip()
+  }
+
+  if (wWrap) {
+    p <- p + ggplot2::scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 30))
   }
 
   if (outFileName == "") {

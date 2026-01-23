@@ -67,7 +67,7 @@ for (var1 in names(data)) {
 ## Create one stacked barplot
 This code block creates a stacked barplot with a "special recoded" variable. "special recoded" variables start at v_700.
 ```{r}
-create_stacked_barplot(data, "v_706", show_values = TRUE, percent = FALSE, custom_labels = c("A", "B", "C", "D"))
+create_stacked_barplot(data, "v_706", show_values = TRUE, percent = FALSE)
 ```
 
 ## Create all stacked barplots
