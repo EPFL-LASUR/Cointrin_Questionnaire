@@ -50,6 +50,13 @@ for (couple in duplicates) {
 }
 ```
 
+```{r}
+cleaned <- rename_quoted_labels(no_duplicates)
+
+cleaned <- replace_special_chars(cleaned)
+```
+
+
 ## Save cleaned file
 Here, we save the cleaned data in the processed data folder.
 ```{r}
@@ -57,5 +64,5 @@ if (!dir.exists(processed_data_folder)) {
   dir.create(processed_data_folder, recursive = TRUE)
 }
 
-haven::write_sav(no_duplicates, file.path(processed_data_folder, "cleaned_data.sav"))
+haven::write_sav(cleaned, file.path(processed_data_folder, "cleaned_data.sav"))
 ```

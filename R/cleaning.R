@@ -55,3 +55,58 @@ calculate_same_answers <- function(data, id1, id2) {
   ratio <- matches / total
   return(ratio)
 }
+
+
+#' Replace Special Characters in Variable Labels
+#'
+#' @param data A data frame with variable labels
+#'
+#' @return The data frame with updated variable labels
+replace_special_chars <- function(data) {
+  for (var in names(data)) {
+    # Replace in variable label
+    label <- attr(data[[var]], "label")
+    if (!is.null(label)) {
+      new_label <- stringr::str_replace_all(label, "\\^", "'")
+      attr(data[[var]], "label") <- new_label
+    }
+
+    # Replace in value labels
+    labels <- attr(data[[var]], "labels")
+    if (!is.null(labels)) {
+      label_names <- names(labels)
+      if (!is.null(label_names)) {
+        new_label_names <- stringr::str_replace_all(label_names, "\\^", "'")
+        names(labels) <- new_label_names
+        attr(data[[var]], "labels") <- labels
+      }
+    }
+  }
+  return(data)
+}
+
+#' Rename Quoted Labels in Variables
+#'
+#' @param data A data frame with variable labels
+#'
+#' @return The data frame with updated variable labels
+rename_quoted_labels <- function(data) {
+  for (var in names(data)) {
+    labels <- attr(data[[var]], "labels")
+    if (!is.null(labels) && length(labels) == 2) {
+      label_names <- names(labels)
+      if (!is.null(label_names)) {
+        if (all(label_names == c("quoted", "not quoted"))) {
+          names(labels) <- c("Ticked", "Unticked")[order(labels)]
+        }
+
+        if (all(label_names == c("not quoted", "quoted"))) {
+          names(labels) <- c("Unticked", "Ticked")[order(labels)]
+        }
+
+        attr(data[[var]], "labels") <- labels
+      }
+    }
+  }
+  return(data)
+}
