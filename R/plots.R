@@ -333,4 +333,3 @@ plot_on_map <- function(data, var, ..., map_plot_folder = file.path("..", "data"
 
   return(p)
 }
-
