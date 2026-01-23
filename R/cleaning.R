@@ -55,3 +55,34 @@ calculate_same_answers <- function(data, id1, id2) {
   ratio <- matches / total
   return(ratio)
 }
+
+
+
+replace_special_chars <- function(data) {
+  for (var in names(data)) {
+
+  }
+  return(data)
+}
+
+
+rename_quoted_labels <- function(data) {
+  for (var in names(data)) {
+    labels <- attr(data[[var]], "labels")
+    if (!is.null(labels) && length(labels) == 2) {
+      label_names <- names(labels)
+      if (!is.null(label_names)) {
+        if (all(label_names == c("quoted", "not quoted"))) {
+          names(labels) <- c("Ticked", "Unticked")[order(labels)]
+        }
+
+        if (all(label_names == c("not quoted", "quoted"))) {
+          names(labels) <- c("Unticked", "Ticked")[order(labels)]
+        }
+
+        attr(data[[var]], "labels") <- labels
+      }
+    }
+  }
+  return(data)
+}
