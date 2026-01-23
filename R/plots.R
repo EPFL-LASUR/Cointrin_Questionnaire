@@ -372,10 +372,7 @@ create_stacked_barplot <- function(data, variable_name, ...,
 
   variables <- get_special_variables(data, variable_name)
 
-  if (title == "" || length(variables) == 0) {
-    stop(paste0("variable ", variable_name, " is not present in the dataset or is not a special variable"))
-  }
-
+  assertthat::assert_that(!(title == "" || length(variables) == 0), msg = "The asked variable is not a regrouped variable.")
 
   if (!dir.exists(stacked_plot_folder)) {
     dir.create(stacked_plot_folder, recursive = TRUE)
@@ -383,9 +380,8 @@ create_stacked_barplot <- function(data, variable_name, ...,
 
   # Check if all variables exist in data
   missing_vars <- variables[!variables %in% names(data)]
-  if (length(missing_vars) > 0) {
-    stop(paste0("Variables not found in dataset: ", paste(missing_vars, collapse = ", ")))
-  }
+
+  assertthat::assert_that(length(missing_vars) <= 0, msg = "The asked variable is not in the dataset.")
 
   # Prepare data for plotting
   plot_data_list <- list()
@@ -428,53 +424,38 @@ create_stacked_barplot <- function(data, variable_name, ...,
     ) |>
     dplyr::ungroup()
 
-  # Create plot
-  if (percent) {
-    p <- ggplot2::ggplot(
-      summary_data,
-      ggplot2::aes(x = variable, y = percentage, fill = response)
-    ) +
-      ggplot2::geom_bar(stat = "identity", position = "stack") +
-      ggplot2::labs(
-        title = title,
-        x = "",
-        y = "Percentage (%)",
-        fill = "Response"
-      )
+  # Create plot with conditional y aesthetic
+  y_var <- if (percent) "percentage" else "count"
+  y_label <- if (percent) "Percentage (%)" else "Count"
 
-    if (show_values) {
-      p <- p +
-        ggplot2::geom_text(
-          ggplot2::aes(label = paste0(round(percentage, 1), "%")),
-          position = ggplot2::position_stack(vjust = 0.5),
-          color = "white",
-          fontface = "bold",
-          size = 3.5
-        )
-    }
-  } else {
-    p <- ggplot2::ggplot(
-      summary_data,
-      ggplot2::aes(x = variable, y = count, fill = response)
-    ) +
-      ggplot2::geom_bar(stat = "identity", position = "stack") +
-      ggplot2::labs(
-        title = title,
-        x = "",
-        y = "Count",
-        fill = "Response"
-      )
+  p <- ggplot2::ggplot(
+    summary_data,
+    ggplot2::aes(x = variable, y = .data[[y_var]], fill = response)
+  ) +
+    ggplot2::geom_bar(stat = "identity", position = "stack") +
+    ggplot2::labs(
+      title = title,
+      x = "",
+      y = y_label,
+      fill = "Response"
+    )
 
-    if (show_values) {
-      p <- p +
-        ggplot2::geom_text(
-          ggplot2::aes(label = count),
-          position = ggplot2::position_stack(vjust = 0.5),
-          color = "white",
-          fontface = "bold",
-          size = 3.5
-        )
+  if (show_values) {
+    label_text <- if (percent) {
+      paste0(round(summary_data$percentage, 1), "%")
+    } else {
+      summary_data$count
     }
+
+    p <- p +
+      ggplot2::geom_text(
+        data = summary_data |> dplyr::mutate(label = label_text),
+        ggplot2::aes(label = label),
+        position = ggplot2::position_stack(vjust = 0.5),
+        color = "white",
+        fontface = "bold",
+        size = 3.5
+      )
   }
 
   p <- p +
