@@ -6,6 +6,7 @@ This code block loads all the data that we need to create plots. It also imports
 ```{r}
 here::i_am(file.path("notebook", "plots.Rmd"))
 source(here::here(file.path("R", "plots.R")))
+source(here::here(file.path("R", "regrouping.R")))
 processed_data_folder <- file.path("..", "data", "processed")
 raw_data_folder <- file.path("..", "data", "raw")
 data <- haven::read_sav(
@@ -61,4 +62,16 @@ for (var1 in names(data)) {
     create_heat_map(data, var1, var2, check_labels = TRUE, percent = TRUE)
   }
 }
+```
+
+## Create one stacked barplot
+This code block creates a stacked barplot with a "special recoded" variable. "special recoded" variables start at v_700.
+```{r}
+create_stacked_barplot(data, "v_706", show_values = TRUE, percent = FALSE)
+```
+
+## Create all stacked barplots
+This code block creates all stacked barplots possible with this dataset.
+```{r}
+generate_all_stacked_barplots(data)
 ```
