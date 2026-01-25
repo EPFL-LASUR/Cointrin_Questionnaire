@@ -511,7 +511,8 @@ generate_all_stacked_barplots <- function(data, ...,
                                           remove_na = TRUE,
                                           percent = TRUE,
                                           show_values = TRUE,
-                                          horizontal = FALSE) {
+                                          horizontal = FALSE,
+                                          wWrap = TRUE) {
   start <- 700
   vname <- paste0("v_", start)
 
@@ -525,7 +526,8 @@ generate_all_stacked_barplots <- function(data, ...,
           remove_na = remove_na,
           percent = percent,
           show_values = show_values,
-          horizontal = horizontal
+          horizontal = horizontal,
+          wWrap = wWrap
         )
         message(paste("Successfully created plot for", vname))
       },

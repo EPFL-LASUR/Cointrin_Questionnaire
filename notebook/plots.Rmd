@@ -49,7 +49,7 @@ plot_on_map(data, "v_15")
 ### Create one Heatmap
 This code block generates a heat map between variables of your choice. the first argument is the dataset to use, second and third argument are the names of the variables to use in the heat map.
 ```{r}
-create_heat_map(data, "v_6_r", "v_14_r", percent = TRUE)
+create_heat_map(data, "v_6_r", "v_204", percent = TRUE)
 ```
 
 ## Create all Heatmaps
@@ -67,7 +67,7 @@ for (var1 in names(data)) {
 ## Create one stacked barplot
 This code block creates a stacked barplot with a "special recoded" variable. "special recoded" variables start at v_700.
 ```{r}
-create_stacked_barplot(data, "v_706", show_values = TRUE, percent = FALSE)
+create_stacked_barplot(data, "v_709", show_values = TRUE, percent = FALSE)
 ```
 
 ## Create all stacked barplots

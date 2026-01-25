@@ -69,28 +69,6 @@ data[["v_601"]] <- haven::labelled(
 ## Regroup special variables
 This code block regroups special variables. Sometimes the question is the title of the page on the questionnaire. We regroup all of the variables on the page that has a question as a title to make their processing easier.
 ```{r}
-data <- data |>
-  dplyr::mutate(
-    v_602 = ifelse(
-      v_461 == 1, 4, ifelse(
-        v_462 == 1, 3, ifelse(
-          v_463 == 1, 2, ifelse(
-            v_464 == 1, 1, ifelse(
-              v_465 == 1, 0, -99
-            )
-          )
-        )
-      )
-    )
-  )
-
-data[["v_602"]] <- haven::labelled(
-  data[["v_602"]],
-  labels = c("Je n'ai pas de places de stationnement privée" = 0, "Pas important" = 1, "Plutôt pas important" = 2, "Plutôt important" = 3, "Très important" = 4, "Pas de réponce" = -99),
-  label = "À quel point est-il important pour vous d'avoir une place de stationnement privée ?"
-)
-
-
 groups <- list(
   c("v_42", "v_43", "v_44", "v_45", "v_46", "v_47", "v_48", "v_49", "v_50", "v_51", "v_52", "v_53", "v_54", "v_278", "v_277"),
   c("v_456", "v_457", "v_458", "v_459"),
@@ -126,28 +104,6 @@ groups <- list(
 data <- regroup_special(data, groups)
 ```
 
-## Unlabeled variables
-This code block adds label to unlabeled variables.
-```{r}
-logement_list = c("v_68", "v_69", "v_70", "v_71", "v_271", "v_242", "v_72", "v_73", "v_272", "v_273", "v_274", "v_275", "v_276")
-for (name in logement_list) {
-  data[[name]] <- haven::labelled(
-    data[[name]],
-    label = paste0("Pensez à votre logement et évaluez votre satisfaction selon ce critère: ", attr(data[[name]], "label")),
-    labels = c("Très satisfaite / Très satisfait" = 1, "Plutôt satisfaite / Plutôt satisfait" = 2, "Peu satisfaite / Peu satisfait" = 3, "Pas du tout satisfaite / Pas du tout satisfait" = 4, "Pas d'avis" = 5)
-  )
-}
-
-
-for (i in 328:334) {
-  name = paste0("v_", i)
-  data[[name]] <- haven::labelled(
-    data[[name]],
-    label = paste0("À quelle fréquence utilisez-vous ce moyen de déplacement: ", attr(data[[name]], "label")),
-    labels = c("Tous les jours ou presque" = 1, "Quelques jours par semaine" = 2, "Quelques jours par mois" = 3, "Quelques jours par année" = 4, "Jamais" = 5)
-  )
-}
-```
 
 ## Save regrouped data
 This code block saves this new regrouped dataset to a new file in the processed data folder.
