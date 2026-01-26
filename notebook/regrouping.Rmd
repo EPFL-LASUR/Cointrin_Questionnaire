@@ -64,6 +64,15 @@ data[["v_601"]] <- haven::labelled(
   labels = c("Enfant(s)" = 1, "Pas d'enfant(s)" = 0),
   label = "Enfant(s)"
 )
+
+
+data[["v_33_1"]] <- haven::labelled(
+  ifelse(data$v_33 %in% c(1, 2), 1,
+         ifelse(data$v_33 %in% c(3, 4), 0, NA)),
+  labels = c("Pas satisfait.e.s" = 0, "Satisfait.e.s" = 1),
+  label = "Satisfaction"
+)
+
 ```
 
 ## Regroup special variables
